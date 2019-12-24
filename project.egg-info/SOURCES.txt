@@ -1,0 +1,14 @@
+README.md
+setup.py
+Thesis/__init__.py
+Thesis/items.py
+Thesis/middlewares.py
+Thesis/pipelines.py
+Thesis/settings.py
+Thesis/spiders/__init__.py
+Thesis/spiders/articles_spider.py
+project.egg-info/PKG-INFO
+project.egg-info/SOURCES.txt
+project.egg-info/dependency_links.txt
+project.egg-info/entry_points.txt
+project.egg-info/top_level.txt
