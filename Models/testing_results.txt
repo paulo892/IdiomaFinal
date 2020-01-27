@@ -1,0 +1,163 @@
+(Models) bash-3.2$ python master.py
+Start!
+Please select the corpora to use as ground truth: 0 - PSFL, 1 - ZH, 2 - Wiki, 3 - BrEscola, 4 - Weighted Average
+0
+FEATURE SELECTION METRICS (DECISION TREE):
+0.2 acc: 0.88 precisions_by_label [0.85, 0.91] precision_global 0.88 recalls_by_label [0.87, 0.89] recall_global 0.88 f1s_by_label [0.86, 0.9] f1_global 0.88
+0.25 acc: 0.88 precisions_by_label [0.86, 0.9] precision_global 0.88 recalls_by_label [0.86, 0.9] recall_global 0.88 f1s_by_label [0.86, 0.9] f1_global 0.88
+0.3 acc: 0.91 precisions_by_label [0.88, 0.93] precision_global 0.91 recalls_by_label [0.92, 0.89] recall_global 0.91 f1s_by_label [0.9, 0.91] f1_global 0.91
+0.35 acc: 0.89 precisions_by_label [0.89, 0.9] precision_global 0.89 recalls_by_label [0.91, 0.88] recall_global 0.89 f1s_by_label [0.9, 0.89] f1_global 0.89
+0.4 acc: 0.88 precisions_by_label [0.83, 0.91] precision_global 0.88 recalls_by_label [0.86, 0.89] recall_global 0.88 f1s_by_label [0.84, 0.9] f1_global 0.88
+0.45 acc: 0.9 precisions_by_label [0.89, 0.91] precision_global 0.9 recalls_by_label [0.84, 0.93] recall_global 0.9 f1s_by_label [0.86, 0.92] f1_global 0.9
+0.5 acc: 0.88 precisions_by_label [0.77, 0.99] precision_global 0.88 recalls_by_label [0.98, 0.82] recall_global 0.88 f1s_by_label [0.86, 0.9] f1_global 0.88
+0.55 acc: 0.91 precisions_by_label [0.94, 0.89] precision_global 0.91 recalls_by_label [0.86, 0.96] recall_global 0.91 f1s_by_label [0.9, 0.92] f1_global 0.91
+0.6 acc: 0.9 precisions_by_label [0.91, 0.89] precision_global 0.9 recalls_by_label [0.85, 0.94] recall_global 0.9 f1s_by_label [0.88, 0.92] f1_global 0.9
+0.65 acc: 0.93 precisions_by_label [0.91, 0.95] precision_global 0.93 recalls_by_label [0.93, 0.93] recall_global 0.93 f1s_by_label [0.92, 0.94] f1_global 0.93
+0.7 acc: 0.9 precisions_by_label [0.87, 0.93] precision_global 0.9 recalls_by_label [0.92, 0.88] recall_global 0.9 f1s_by_label [0.9, 0.9] f1_global 0.9
+0.75 acc: 0.91 precisions_by_label [0.87, 0.95] precision_global 0.91 recalls_by_label [0.93, 0.9] recall_global 0.91 f1s_by_label [0.9, 0.92] f1_global 0.91
+Please input a reasonable decimal threshold for feature selection:
+0.6
+DECISION TREE: acc: 0.92 precisions_by_label [0.91, 0.92] precision_global 0.92 recalls_by_label [0.89, 0.93] recall_global 0.92 f1s_by_label [0.9, 0.93] f1_global 0.92
+Please select the corpora to use as ground truth: 0 - PSFL, 1 - ZH, 2 - Wiki, 3 - BrEscola, 4 - Weighted Average
+0
+Optimal Params (NEAREST NEIGHBOR): ball_tree 5
+FEATURE SELECTION METRICS (NEAREST NEIGHBOR):
+0.2 acc: 0.91 precisions_by_label [0.89, 0.92] precision_global 0.91 recalls_by_label [0.89, 0.92] recall_global 0.91 f1s_by_label [0.89, 0.92] f1_global 0.91
+0.25 acc: 0.92 precisions_by_label [0.88, 0.95] precision_global 0.92 recalls_by_label [0.93, 0.91] recall_global 0.92 f1s_by_label [0.9, 0.93] f1_global 0.92
+0.3 acc: 0.93 precisions_by_label [0.92, 0.93] precision_global 0.93 recalls_by_label [0.92, 0.93] recall_global 0.93 f1s_by_label [0.92, 0.93] f1_global 0.93
+0.35 acc: 0.94 precisions_by_label [0.94, 0.93] precision_global 0.94 recalls_by_label [0.93, 0.94] recall_global 0.94 f1s_by_label [0.94, 0.93] f1_global 0.94
+0.4 acc: 0.95 precisions_by_label [0.98, 0.92] precision_global 0.95 recalls_by_label [0.92, 0.98] recall_global 0.95 f1s_by_label [0.95, 0.95] f1_global 0.95
+0.45 acc: 0.91 precisions_by_label [0.89, 0.92] precision_global 0.91 recalls_by_label [0.89, 0.92] recall_global 0.91 f1s_by_label [0.89, 0.92] f1_global 0.91
+0.5 acc: 0.94 precisions_by_label [0.95, 0.94] precision_global 0.94 recalls_by_label [0.89, 0.97] recall_global 0.94 f1s_by_label [0.92, 0.95] f1_global 0.94
+0.55 acc: 0.94 precisions_by_label [0.95, 0.93] precision_global 0.94 recalls_by_label [0.91, 0.96] recall_global 0.94 f1s_by_label [0.93, 0.94] f1_global 0.94
+0.6 acc: 0.92 precisions_by_label [0.9, 0.93] precision_global 0.92 recalls_by_label [0.9, 0.93] recall_global 0.92 f1s_by_label [0.9, 0.93] f1_global 0.92
+0.65 acc: 0.94 precisions_by_label [0.93, 0.95] precision_global 0.94 recalls_by_label [0.9, 0.96] recall_global 0.94 f1s_by_label [0.91, 0.96] f1_global 0.94
+0.7 acc: 0.92 precisions_by_label [0.94, 0.92] precision_global 0.92 recalls_by_label [0.87, 0.96] recall_global 0.92 f1s_by_label [0.9, 0.94] f1_global 0.92
+0.75 acc: 0.95 precisions_by_label [0.93, 0.96] precision_global 0.95 recalls_by_label [0.94, 0.95] recall_global 0.95 f1s_by_label [0.94, 0.95] f1_global 0.95
+Please input a reasonable decimal threshold for feature selection:
+0.6
+NEAREST NEIGHBORS: acc: 0.92 precisions_by_label [0.9, 0.94] precision_global 0.92 recalls_by_label [0.91, 0.93] recall_global 0.92 f1s_by_label [0.91, 0.93] f1_global 0.92
+Please select the corpora to use as ground truth: 0 - PSFL, 1 - ZH, 2 - Wiki, 3 - BrEscola, 4 - Weighted Average
+0
+Optimal Params (SGD): hinge 0.01
+FEATURE SELECTION METRICS (SGD):
+0.2 acc: 0.86 precisions_by_label [0.89, 0.83] precision_global 0.86 recalls_by_label [0.78, 0.92] recall_global 0.86 f1s_by_label [0.83, 0.87] f1_global 0.86
+0.25 acc: 0.83 precisions_by_label [0.99, 0.78] precision_global 0.83 recalls_by_label [0.61, 0.99] recall_global 0.83 f1s_by_label [0.75, 0.87] f1_global 0.83
+0.3 acc: 0.84 precisions_by_label [0.78, 0.92] precision_global 0.84 recalls_by_label [0.92, 0.78] recall_global 0.84 f1s_by_label [0.84, 0.84] f1_global 0.84
+0.35 acc: 0.86 precisions_by_label [0.78, 0.97] precision_global 0.86 recalls_by_label [0.97, 0.76] recall_global 0.86 f1s_by_label [0.86, 0.85] f1_global 0.86
+0.4 acc: 0.68 precisions_by_label [0.57, 1.0] precision_global 0.68 recalls_by_label [1.0, 0.42] recall_global 0.68 f1s_by_label [0.73, 0.6] f1_global 0.68
+0.45 acc: 0.88 precisions_by_label [0.83, 0.91] precision_global 0.88 recalls_by_label [0.89, 0.86] recall_global 0.88 f1s_by_label [0.86, 0.88] f1_global 0.88
+0.5 acc: 0.81 precisions_by_label [0.71, 0.98] precision_global 0.81 recalls_by_label [0.98, 0.67] recall_global 0.81 f1s_by_label [0.82, 0.8] f1_global 0.81
+0.55 acc: 0.76 precisions_by_label [0.66, 0.94] precision_global 0.76 recalls_by_label [0.96, 0.6] recall_global 0.76 f1s_by_label [0.78, 0.73] f1_global 0.76
+0.6 acc: 0.7 precisions_by_label [0.94, 0.67] precision_global 0.7 recalls_by_label [0.29, 0.99] recall_global 0.7 f1s_by_label [0.44, 0.79] f1_global 0.7
+0.65 acc: 0.87 precisions_by_label [0.89, 0.86] precision_global 0.87 recalls_by_label [0.77, 0.93] recall_global 0.87 f1s_by_label [0.82, 0.89] f1_global 0.87
+0.7 acc: 0.86 precisions_by_label [0.76, 0.98] precision_global 0.86 recalls_by_label [0.97, 0.79] recall_global 0.86 f1s_by_label [0.86, 0.87] f1_global 0.86
+0.75 acc: 0.84 precisions_by_label [0.97, 0.79] precision_global 0.84 recalls_by_label [0.66, 0.99] recall_global 0.84 f1s_by_label [0.79, 0.88] f1_global 0.84
+Please input a reasonable decimal threshold for feature selection:
+0.6
+SGD: acc: 0.83 precisions_by_label [0.72, 0.99] precision_global 0.83 recalls_by_label [0.99, 0.71] recall_global 0.83 f1s_by_label [0.83, 0.82] f1_global 0.83
+Please select the corpora to use as ground truth: 0 - PSFL, 1 - ZH, 2 - Wiki, 3 - BrEscola, 4 - Weighted Average
+0
+/Users/PauloFrazao/.local/share/virtualenvs/Models-jXuotJvp/lib/python3.7/site-packages/sklearn/model_selection/_validation.py:536: FitFailedWarning:
+
+Estimator fit failed. The score on this train-test partition for these parameters will be set to nan. Details: 
+ValueError: The activation 'perceptron' is not supported. Supported activations are ['identity', 'logistic', 'relu', 'softmax', 'tanh'].
+
+
+Optimal Params (MLP): tanh 1e-05
+FEATURE SELECTION METRICS (MLP):
+0.2 acc: 0.89 precisions_by_label [0.91, 0.88] precision_global 0.89 recalls_by_label [0.87, 0.92] recall_global 0.89 f1s_by_label [0.89, 0.9] f1_global 0.89
+0.25 acc: 0.91 precisions_by_label [0.96, 0.88] precision_global 0.91 recalls_by_label [0.86, 0.96] recall_global 0.91 f1s_by_label [0.91, 0.92] f1_global 0.91
+0.3 acc: 0.87 precisions_by_label [0.84, 0.89] precision_global 0.87 recalls_by_label [0.87, 0.87] recall_global 0.87 f1s_by_label [0.85, 0.88] f1_global 0.87
+0.35 acc: 0.9 precisions_by_label [0.89, 0.91] precision_global 0.9 recalls_by_label [0.88, 0.92] recall_global 0.9 f1s_by_label [0.89, 0.91] f1_global 0.9
+0.4 acc: 0.85 precisions_by_label [0.89, 0.82] precision_global 0.85 recalls_by_label [0.77, 0.92] recall_global 0.85 f1s_by_label [0.83, 0.87] f1_global 0.85
+0.45 acc: 0.86 precisions_by_label [0.84, 0.88] precision_global 0.86 recalls_by_label [0.85, 0.87] recall_global 0.86 f1s_by_label [0.85, 0.88] f1_global 0.86
+0.5 acc: 0.88 precisions_by_label [0.87, 0.89] precision_global 0.88 recalls_by_label [0.87, 0.88] recall_global 0.88 f1s_by_label [0.87, 0.89] f1_global 0.88
+0.55 acc: 0.91 precisions_by_label [0.88, 0.94] precision_global 0.91 recalls_by_label [0.92, 0.9] recall_global 0.91 f1s_by_label [0.9, 0.92] f1_global 0.91
+0.6 acc: 0.92 precisions_by_label [0.91, 0.93] precision_global 0.92 recalls_by_label [0.91, 0.93] recall_global 0.92 f1s_by_label [0.91, 0.93] f1_global 0.92
+0.65 acc: 0.91 precisions_by_label [0.91, 0.9] precision_global 0.91 recalls_by_label [0.86, 0.94] recall_global 0.91 f1s_by_label [0.89, 0.92] f1_global 0.91
+0.7 acc: 0.91 precisions_by_label [0.9, 0.92] precision_global 0.91 recalls_by_label [0.88, 0.93] recall_global 0.91 f1s_by_label [0.89, 0.93] f1_global 0.91
+0.75 acc: 0.89 precisions_by_label [0.91, 0.88] precision_global 0.89 recalls_by_label [0.83, 0.94] recall_global 0.89 f1s_by_label [0.87, 0.9] f1_global 0.89
+Please input a reasonable decimal threshold for feature selection:
+0.6
+MLP: acc: 0.93 precisions_by_label [0.92, 0.93] precision_global 0.93 recalls_by_label [0.91, 0.94] recall_global 0.93 f1s_by_label [0.91, 0.93] f1_global 0.93
+Please select the corpora to use as ground truth: 0 - PSFL, 1 - ZH, 2 - Wiki, 3 - BrEscola, 4 - Weighted Average
+0
+FEATURE SELECTION METRICS (GAUSSIAN NB):
+0.2 acc: 0.89 precisions_by_label [0.97, 0.84] precision_global 0.89 recalls_by_label [0.81, 0.98] recall_global 0.89 f1s_by_label [0.88, 0.9] f1_global 0.89
+0.25 acc: 0.9 precisions_by_label [0.97, 0.86] precision_global 0.9 recalls_by_label [0.8, 0.98] recall_global 0.9 f1s_by_label [0.88, 0.91] f1_global 0.9
+0.3 acc: 0.93 precisions_by_label [0.98, 0.89] precision_global 0.93 recalls_by_label [0.85, 0.99] recall_global 0.93 f1s_by_label [0.91, 0.94] f1_global 0.93
+0.35 acc: 0.91 precisions_by_label [0.97, 0.87] precision_global 0.91 recalls_by_label [0.83, 0.98] recall_global 0.91 f1s_by_label [0.89, 0.92] f1_global 0.91
+0.4 acc: 0.92 precisions_by_label [0.94, 0.91] precision_global 0.92 recalls_by_label [0.86, 0.96] recall_global 0.92 f1s_by_label [0.9, 0.93] f1_global 0.92
+0.45 acc: 0.93 precisions_by_label [0.96, 0.9] precision_global 0.93 recalls_by_label [0.87, 0.97] recall_global 0.93 f1s_by_label [0.91, 0.94] f1_global 0.93
+0.5 acc: 0.9 precisions_by_label [0.9, 0.9] precision_global 0.9 recalls_by_label [0.86, 0.93] recall_global 0.9 f1s_by_label [0.88, 0.91] f1_global 0.9
+0.55 acc: 0.88 precisions_by_label [0.93, 0.85] precision_global 0.88 recalls_by_label [0.81, 0.95] recall_global 0.88 f1s_by_label [0.87, 0.9] f1_global 0.88
+0.6 acc: 0.85 precisions_by_label [0.9, 0.83] precision_global 0.85 recalls_by_label [0.73, 0.94] recall_global 0.85 f1s_by_label [0.81, 0.88] f1_global 0.85
+0.65 acc: 0.92 precisions_by_label [0.96, 0.89] precision_global 0.92 recalls_by_label [0.87, 0.96] recall_global 0.92 f1s_by_label [0.91, 0.92] f1_global 0.92
+0.7 acc: 0.88 precisions_by_label [0.94, 0.84] precision_global 0.88 recalls_by_label [0.79, 0.96] recall_global 0.88 f1s_by_label [0.86, 0.9] f1_global 0.88
+0.75 acc: 0.9 precisions_by_label [0.96, 0.86] precision_global 0.9 recalls_by_label [0.83, 0.97] recall_global 0.9 f1s_by_label [0.89, 0.91] f1_global 0.9
+Please input a reasonable decimal threshold for feature selection:
+0.6
+Gaussian NB: acc: 0.9 precisions_by_label [0.97, 0.86] precision_global 0.9 recalls_by_label [0.81, 0.98] recall_global 0.9 f1s_by_label [0.88, 0.91] f1_global 0.9
+Please select the corpora to use as ground truth: 0 - PSFL, 1 - ZH, 2 - Wiki, 3 - BrEscola, 4 - Weighted Average
+0
+Optimal Params (BAGGING): DecisionTreeClassifier(ccp_alpha=0.0, class_weight=None, criterion='gini',
+                       max_depth=None, max_features=None, max_leaf_nodes=None,
+                       min_impurity_decrease=0.0, min_impurity_split=None,
+                       min_samples_leaf=1, min_samples_split=2,
+                       min_weight_fraction_leaf=0.0, presort='deprecated',
+                       random_state=None, splitter='best') 15 True
+FEATURE SELECTION METRICS (BAGGING):
+0.2 acc: 0.91 precisions_by_label [0.9, 0.93] precision_global 0.91 recalls_by_label [0.9, 0.93] recall_global 0.91 f1s_by_label [0.9, 0.93] f1_global 0.91
+0.25 acc: 0.85 precisions_by_label [0.82, 0.87] precision_global 0.85 recalls_by_label [0.84, 0.86] recall_global 0.85 f1s_by_label [0.83, 0.87] f1_global 0.85
+0.3 acc: 0.9 precisions_by_label [0.92, 0.89] precision_global 0.9 recalls_by_label [0.88, 0.92] recall_global 0.9 f1s_by_label [0.9, 0.91] f1_global 0.9
+0.35 acc: 0.9 precisions_by_label [0.87, 0.92] precision_global 0.9 recalls_by_label [0.9, 0.9] recall_global 0.9 f1s_by_label [0.89, 0.91] f1_global 0.9
+0.4 acc: 0.93 precisions_by_label [0.91, 0.95] precision_global 0.93 recalls_by_label [0.92, 0.94] recall_global 0.93 f1s_by_label [0.92, 0.95] f1_global 0.93
+0.45 acc: 0.93 precisions_by_label [0.89, 0.96] precision_global 0.93 recalls_by_label [0.95, 0.91] recall_global 0.93 f1s_by_label [0.92, 0.93] f1_global 0.93
+0.5 acc: 0.91 precisions_by_label [0.94, 0.89] precision_global 0.91 recalls_by_label [0.85, 0.96] recall_global 0.91 f1s_by_label [0.89, 0.92] f1_global 0.91
+0.55 acc: 0.95 precisions_by_label [0.92, 0.97] precision_global 0.95 recalls_by_label [0.95, 0.95] recall_global 0.95 f1s_by_label [0.94, 0.96] f1_global 0.95
+0.6 acc: 0.93 precisions_by_label [0.89, 0.95] precision_global 0.93 recalls_by_label [0.93, 0.92] recall_global 0.93 f1s_by_label [0.91, 0.94] f1_global 0.93
+0.65 acc: 0.93 precisions_by_label [0.95, 0.92] precision_global 0.93 recalls_by_label [0.9, 0.96] recall_global 0.93 f1s_by_label [0.92, 0.94] f1_global 0.93
+0.7 acc: 0.93 precisions_by_label [0.93, 0.92] precision_global 0.93 recalls_by_label [0.89, 0.95] recall_global 0.93 f1s_by_label [0.91, 0.94] f1_global 0.93
+0.75 acc: 0.93 precisions_by_label [0.9, 0.96] precision_global 0.93 recalls_by_label [0.94, 0.93] recall_global 0.93 f1s_by_label [0.92, 0.94] f1_global 0.93
+Please input a reasonable decimal threshold for feature selection:
+0.6
+BAG: acc: 0.94 precisions_by_label [0.94, 0.94] precision_global 0.94 recalls_by_label [0.93, 0.95] recall_global 0.94 f1s_by_label [0.94, 0.95] f1_global 0.94
+Please select the corpora to use as ground truth: 0 - PSFL, 1 - ZH, 2 - Wiki, 3 - BrEscola, 4 - Weighted Average
+0
+Optimal Params (FOREST): 200 entropy None
+FEATURE SELECTION METRICS (FOREST):
+0.2 acc: 0.93 precisions_by_label [0.94, 0.93] precision_global 0.93 recalls_by_label [0.91, 0.95] recall_global 0.93 f1s_by_label [0.92, 0.94] f1_global 0.93
+0.25 acc: 0.95 precisions_by_label [0.95, 0.96] precision_global 0.95 recalls_by_label [0.95, 0.96] recall_global 0.95 f1s_by_label [0.95, 0.96] f1_global 0.95
+0.3 acc: 0.93 precisions_by_label [0.96, 0.91] precision_global 0.93 recalls_by_label [0.88, 0.97] recall_global 0.93 f1s_by_label [0.92, 0.94] f1_global 0.93
+0.35 acc: 0.92 precisions_by_label [0.93, 0.92] precision_global 0.92 recalls_by_label [0.89, 0.94] recall_global 0.92 f1s_by_label [0.91, 0.93] f1_global 0.92
+0.4 acc: 0.95 precisions_by_label [0.95, 0.95] precision_global 0.95 recalls_by_label [0.92, 0.97] recall_global 0.95 f1s_by_label [0.93, 0.96] f1_global 0.95
+0.45 acc: 0.93 precisions_by_label [0.93, 0.93] precision_global 0.93 recalls_by_label [0.9, 0.95] recall_global 0.93 f1s_by_label [0.92, 0.94] f1_global 0.93
+0.5 acc: 0.91 precisions_by_label [0.89, 0.92] precision_global 0.91 recalls_by_label [0.9, 0.92] recall_global 0.91 f1s_by_label [0.9, 0.92] f1_global 0.91
+0.55 acc: 0.94 precisions_by_label [0.93, 0.95] precision_global 0.94 recalls_by_label [0.95, 0.92] recall_global 0.94 f1s_by_label [0.94, 0.93] f1_global 0.94
+0.6 acc: 0.95 precisions_by_label [0.95, 0.95] precision_global 0.95 recalls_by_label [0.94, 0.97] recall_global 0.95 f1s_by_label [0.94, 0.96] f1_global 0.95
+0.65 acc: 0.92 precisions_by_label [0.91, 0.93] precision_global 0.92 recalls_by_label [0.91, 0.93] recall_global 0.92 f1s_by_label [0.91, 0.93] f1_global 0.92
+0.7 acc: 0.94 precisions_by_label [0.94, 0.93] precision_global 0.94 recalls_by_label [0.93, 0.95] recall_global 0.94 f1s_by_label [0.93, 0.94] f1_global 0.94
+0.75 acc: 0.93 precisions_by_label [0.9, 0.94] precision_global 0.93 recalls_by_label [0.93, 0.92] recall_global 0.93 f1s_by_label [0.91, 0.93] f1_global 0.93
+Please input a reasonable decimal threshold for feature selection:
+0.6
+FOREST: acc: 0.94 precisions_by_label [0.92, 0.95] precision_global 0.94 recalls_by_label [0.93, 0.94] recall_global 0.94 f1s_by_label [0.93, 0.94] f1_global 0.94
+Please select the corpora to use as ground truth: 0 - PSFL, 1 - ZH, 2 - Wiki, 3 - BrEscola, 4 - Weighted Average
+0
+Optimal Params (SVC): linear 3
+FEATURE SELECTION METRICS (SVC):
+0.2 acc: 0.89 precisions_by_label [0.9, 0.89] precision_global 0.89 recalls_by_label [0.85, 0.92] recall_global 0.89 f1s_by_label [0.87, 0.91] f1_global 0.89
+0.25 acc: 0.91 precisions_by_label [0.9, 0.92] precision_global 0.91 recalls_by_label [0.89, 0.93] recall_global 0.91 f1s_by_label [0.9, 0.93] f1_global 0.91
+0.3 acc: 0.92 precisions_by_label [0.93, 0.92] precision_global 0.92 recalls_by_label [0.88, 0.95] recall_global 0.92 f1s_by_label [0.9, 0.93] f1_global 0.92
+0.35 acc: 0.94 precisions_by_label [0.91, 0.96] precision_global 0.94 recalls_by_label [0.94, 0.93] recall_global 0.94 f1s_by_label [0.92, 0.95] f1_global 0.94
+0.4 acc: 0.95 precisions_by_label [0.92, 0.97] precision_global 0.95 recalls_by_label [0.96, 0.94] recall_global 0.95 f1s_by_label [0.94, 0.96] f1_global 0.95
+0.45 acc: 0.93 precisions_by_label [0.91, 0.94] precision_global 0.93 recalls_by_label [0.93, 0.92] recall_global 0.93 f1s_by_label [0.92, 0.93] f1_global 0.93
+0.5 acc: 0.93 precisions_by_label [0.94, 0.92] precision_global 0.93 recalls_by_label [0.91, 0.95] recall_global 0.93 f1s_by_label [0.92, 0.94] f1_global 0.93
+0.55 acc: 0.94 precisions_by_label [0.91, 0.96] precision_global 0.94 recalls_by_label [0.95, 0.93] recall_global 0.94 f1s_by_label [0.93, 0.94] f1_global 0.94
+0.6 acc: 0.93 precisions_by_label [0.91, 0.94] precision_global 0.93 recalls_by_label [0.93, 0.92] recall_global 0.93 f1s_by_label [0.92, 0.93] f1_global 0.93
+0.65 acc: 0.96 precisions_by_label [0.93, 0.98] precision_global 0.96 recalls_by_label [0.97, 0.94] recall_global 0.96 f1s_by_label [0.95, 0.96] f1_global 0.96
+0.7 acc: 0.95 precisions_by_label [0.95, 0.95] precision_global 0.95 recalls_by_label [0.94, 0.97] recall_global 0.95 f1s_by_label [0.94, 0.96] f1_global 0.95
+0.75 acc: 0.93 precisions_by_label [0.93, 0.92] precision_global 0.93 recalls_by_label [0.88, 0.95] recall_global 0.93 f1s_by_label [0.91, 0.94] f1_global 0.93
+Please input a reasonable decimal threshold for feature selection:
+0.6 
+SVC: acc: 0.94 precisions_by_label [0.94, 0.94] precision_global 0.94 recalls_by_label [0.93, 0.96] recall_global 0.94 f1s_by_label [0.93, 0.95] f1_global 0.94

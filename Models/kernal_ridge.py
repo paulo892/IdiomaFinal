@@ -1,6 +1,8 @@
 from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import SelectPercentile
+from sklearn.svm import SVC
+from sklearn.model_selection import GridSearchCV
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 from sklearn import tree
@@ -78,15 +80,26 @@ def train(data):
 	X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2)
 
 	# partitions the training set into a general set (for use in the model) and a tuning set (for use in refining other components)
-	X_general, X_tuning, y_general, y_tuning = train_test_split(X_train, y_train, test_size=0.2)
+	X_general, X_tuning, y_general, y_tuning = train_test_split(X_train, y_train, test_size=0.3)
 
 	X_tuning_copy = X_tuning.copy()
+
+	# Uses GridSearchCV to determine the right kernel 
+	#, degree=[2, 3, 4]
+	model = SVC()
+	grid = GridSearchCV(estimator=model, param_grid=dict(kernel=['linear', 'poly', 'rbf', 'sigmoid'], degree=[1,2,3,4]))
+	grid.fit(X_tuning, y_tuning)
+
+	op_kernel = grid.best_estimator_.kernel
+	op_degree = grid.best_estimator_.degree
+
+	print('Optimal Params (SVC):', op_kernel, op_degree)
 
 	## performs feature selection using other scikit libraries
 
 	# TODO - Average all metrics out over many rounds for better selection
 	# TODO - Select only a couple of metrics
-	print('FEATURE SELECTION METRICS (DECISION TREE):')
+	print('FEATURE SELECTION METRICS (SVC):')
 	for j in range(20, 80, 5):
 		index = X_tuning.index.tolist()
 		cols = X_tuning.columns.tolist()
@@ -103,8 +116,8 @@ def train(data):
 		X_train_iter, X_test_iter, y_train_iter, y_test_iter = train_test_split(X_tuning, y_tuning, test_size=0.2)
 
 		# fits a basic decision tree model on the data
-		dec_tree = tree.DecisionTreeClassifier()
-		fitted = dec_tree.fit(X_train_iter, y_train_iter)
+		svc = SVC(kernal=op_kernel, degree=op_degree)
+		fitted = svc.fit(X_train_iter, y_train_iter)
 
 		# calculates the accuracy, precision, recall, and f1-measure
 		y_pred = fitted.predict(X_test_iter).tolist()
@@ -151,8 +164,8 @@ def train(data):
 	X_test = pd.DataFrame(data=X_test, index=index_test, columns=[cols[i] for i in temp])
 
 	# fits a decision tree model to the testing data
-	dec_tree = tree.DecisionTreeClassifier()
-	fitted = dec_tree.fit(X_general, y_general)
+	svc = SVC(kernal=op_kernel, degree=op_degree)
+	fitted = svc.fit(X_general, y_general)
 
 	# prints evaluation metrics
 	y_pred = fitted.predict(X_test).tolist()
@@ -167,7 +180,7 @@ def train(data):
 	f1_global = f1_score(y_true, y_pred, average='micro') 
 
 	# TODO - Print metrics more intelligently
-	print('DECISION TREE:', 'acc:', round(accuracy, 2), 'precisions_by_label', [round(x, 2) for x in precisions_by_label], 'precision_global', round(precision_global, 2), 'recalls_by_label', [round(x, 2) for x in recalls_by_label], 'recall_global', round(recall_global, 2), 'f1s_by_label', [round(x, 2) for x in f1s_by_label], 'f1_global', round(f1_global, 2))
+	print('SVC:', 'acc:', round(accuracy, 2), 'precisions_by_label', [round(x, 2) for x in precisions_by_label], 'precision_global', round(precision_global, 2), 'recalls_by_label', [round(x, 2) for x in recalls_by_label], 'recall_global', round(recall_global, 2), 'f1s_by_label', [round(x, 2) for x in f1s_by_label], 'f1_global', round(f1_global, 2))
 
 	# TODO - Plot all evaluation metrics!
 	# visualizes the residuals
@@ -180,7 +193,7 @@ def train(data):
 	#plt.clf()
 
 	# saves the model to a file
-	filename = 'decision_tree.sav'
+	filename = 'svc.sav'
 	pickle.dump(fitted, open(filename, 'wb'))
 
 	# prints the mean accuracy

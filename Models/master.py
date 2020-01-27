@@ -16,9 +16,19 @@ import numpy as np
 import statistics
 import math
 import decision_tree
+import nearest_neighbor
+import sgd_classifier
+import mlp_classifier
+import gaussian_nb
+import bagging
+import random_forest
+import svc
+import kernel_ridge
 import plotly as py
 import plotly.graph_objs as go
 import matplotlib.pyplot as plt
+
+# TODO - Assess whether it is reasonable for the data to be giving higher accuracy on test than on training data -> seems not, but maybe due to little data?
 
 def preprocess(data):
 
@@ -146,6 +156,14 @@ if __name__ == '__main__':
 
 	# creates the models
 	dec_tree = decision_tree.train(test_data)
+	nearest_neighbor = nearest_neighbor.train(test_data)
+	sgd = sgd_classifier.train(test_data)
+	mlp = mlp_classifier.train(test_data)
+	gaussian_nb = gaussian_nb.train(test_data)
+	bagging = bagging.train(test_data)
+	forest = random_forest.train(test_data)
+	svc = svc.train(test_data)
+	#kr = kernel_ridge.train(test_data)
 
 	# plots the model results
 	#plot([lin_reg, poly_reg, ridge_reg, lasso_reg, svm_reg, forest_reg])
