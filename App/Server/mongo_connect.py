@@ -16,7 +16,8 @@ mongo = pymongo.MongoClient('mongodb+srv://paulo892:hello@cluster0-farth.mongodb
 
 db = pymongo.database.Database(mongo, 'idioma')
 users = pymongo.collection.Collection(db, 'users')
-user_results = json.loads(dumps(users.find().limit(5).sort("email", -1)))
+#user_results = json.loads(dumps(users.find().limit(5).sort("email", -1)))
+user_results = 'HELLO'
 
 # testing
 

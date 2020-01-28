@@ -40,7 +40,8 @@ class ArticleSpider(scrapy.Spider):
 				#print('Possible category:', link)
 
 				# only follows heading if it is valid
-				if link[0:5] != '/tag/' or link != '/tag/cidades.html':
+				if link[0:5] != '/tag/':
+					# or link != '/tag/cidades.html'
 					#print('category scrapped :(')
 					continue
 
@@ -58,7 +59,7 @@ class ArticleSpider(scrapy.Spider):
 
 		self.driver.get(response.url)
 
-		for i in range(10):
+		for i in range(100):
 			try:
 				print('OJOEJOEFJ', i)
 				if i != 0:
@@ -84,6 +85,7 @@ class ArticleSpider(scrapy.Spider):
 		#resp = response.css('header.t-am-head')
 
 		links = [i.get_attribute('href') for i in self.driver.find_elements_by_css_selector('.t-am-text')]
+		print('fosforfjs', len(links))
 
 		# for each potential link, ...
 		for link in links:
@@ -122,7 +124,11 @@ class ArticleSpider(scrapy.Spider):
 			item["text"] += paragraph
 
 		item["tags"] = []
-		for tag in response.css('nav.t-article-list-3-body ul li a::text').getall():
+		for tag in response.css('nav.t-article-list-3-body ul li a span::text').getall():
 			item["tags"].append(tag)
+			#print(tag)
+			#for nxt in tag.css('li').getall():
+			#	for onemore in nxt.css('a::text'):
+			#		item["tags"].append(onemore)
 
 		return item

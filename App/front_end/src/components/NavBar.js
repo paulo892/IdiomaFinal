@@ -24,7 +24,7 @@ const styles = theme => ({
         fontFamily: 'Karla, sans-serif',
         color: '#2268B2',
         border: 'solid',
-        borderColor: '#8B8982',
+        borderColor: '#9CBDD2',
         backgroundColor: "#f5f5f5",
         fontSize: '1em',
     }
@@ -38,7 +38,7 @@ export default withStyles(styles)(class NavHeader extends React.Component {
         if (window.location.pathname === '/') return null;
         {
             return (
-            <Paper square><header>{this.props.auth.isAuthenticated() &&
+            <Paper elevation={24} square><header>{this.props.auth.isAuthenticated() &&
                 <Grid container alignItems="center" >
                     <Grid container item xs={12} sm={3} justify="center">
                         <img className={classes.logo} src={logo} />
