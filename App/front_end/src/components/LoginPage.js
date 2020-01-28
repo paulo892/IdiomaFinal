@@ -7,6 +7,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import People from "@material-ui/icons/People";
 import Icon from "@material-ui/core/Icon";
 import LockIcon from '@material-ui/icons/Lock';
+import NavBar2 from './NavBar2';
 import axios from 'axios';
 import BackgroundSlideshow from 'react-background-slideshow'
 
@@ -151,7 +152,7 @@ export default withStyles(styles)(class LoginPage extends React.Component {
                     
                     
                     <Grid item xs={3} >
-                        <Button className={classes.loginButton} variant="contained"  onClick={this.handleSubmit}>Log in with Auth0!</Button>
+                        <NavBar2/>
                     </Grid>
                 </Grid>
             </div>

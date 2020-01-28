@@ -5,9 +5,12 @@ import Callback from '../auth/CallBack';
 import Auth from '../auth/auth';
 import history from '../auth/history';
 import LoginPage from '../components/LoginPage'
-import NavBar from '../components/NavBar'
+import NavBar2 from '../components/NavBar2';
+import NavBar3 from '../components/NavBar3'
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
+import Dashboard from '../components/Dashboard';
+import { useAuth0 } from "../react-auth0-spa";
 
 const theme = createMuiTheme({
   typography: {
@@ -31,29 +34,22 @@ const handleAuthentication = (nextState, replace) => {
   }
 }
 
-class Routes extends Component {
-  state = {
-      auth: false
-  };
+function Routes() {
+  const { loading } = useAuth0();
 
-  login = () => {
-    auth.login();
-    this.setState({auth: auth.isAuthenticated()});
+  if (loading) {
+    return <div>Loading...</div>;
   }
-  // calls the logout method in authentication service
-  logout = () => {
-    auth.logout();
-    this.setState({auth: auth.isAuthenticated()});
-  }
-  render() {
-    return(
+
+  return (<div>
     <ThemeProvider theme={theme}>
       <Router history={history} component={Home}>
         <div>
-          <NavBar auth={auth} handleSubmit={this.logout}/>
+          <NavBar3 auth={auth} />
           <Switch>
-            <Route exact path="/" render={(props) => <Home auth={auth} handleSubmit={this.login} {...props} />} />
-            <Route path="/home" render={(props) => <Home auth={auth} handleSubmit={this.logout} {...props} />} />
+            <Route exact path="/" render={(props) => <Home auth={auth}  {...props} />} />
+            <Route path="/home" render={(props) => <Home auth={auth}  {...props} />} />
+            <Route path="/dash" render={(props) => <Dashboard auth={auth} {...props} />} />
             <Route path="/callback" render={(props) => {
               console.log('there');
               handleAuthentication(props);
@@ -62,8 +58,8 @@ class Routes extends Component {
           </Switch>
         </div>
       </Router>
-    </ThemeProvider>);
-  } 
+    </ThemeProvider></div>)
+
 }
 
 export default Routes;
