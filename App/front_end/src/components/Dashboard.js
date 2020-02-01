@@ -14,7 +14,11 @@ import LockIcon from '@material-ui/icons/Lock';
 import Checkbox from '@material-ui/core/Checkbox';
 import axios from 'axios';
 import FormGroup from '@material-ui/core/FormGroup';
+import {Link} from "react-router-dom";
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { NavLink } from 'react-router-dom';
+import DocumentPage from './DocumentPage'
+
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 
@@ -98,8 +102,8 @@ const styles = theme => ({
         color: 'red !important'
     },
     questionPaper: {
-        marginTop: '10vh',
-        color: '#58ABDE',
+        marginTop: '25vh',
+        color: '#2268B2',
         fontFamily: 'Karla, sans-serif',
         paddingTop: '1vw',
         paddingRight: '3vw',
@@ -120,68 +124,76 @@ const styles = theme => ({
         width: '25vw'
     },
     backgroundDiv: {
-        backgroundColor: '#2268B2',
-        height: '90vh'
+        backgroundColor: '#58ABDE',
+        height: 'auto'
     }
 })
 
 
 
+
+
 export default withStyles(styles)(class LoginPage extends React.Component {
 
-    beginner_topics = ['Numeros', 'Ser vs. Estar', 'Pretérito']
-    intermediate_topics = ['Uma coisa', 'Outra coisa', 'Uma terceira coisa', 'Uma final coisa']
-    advanced_topics = ['COS', 'POR']
+    beginner_topics = ['Numeros', 'Ser vs. Estar', 'Pretérito'];
+    intermediate_topics = ['Uma coisa', 'Outra coisa', 'Uma terceira coisa', 'Uma final coisa'];
+    advanced_topics = ['COS', 'POR'];
+
+    
 
     state = {
         attributes: [],
+        experience: [],
+        articleId: null,
         articlePrepared: false
     }
 
-    getArticle = async() => {
-        await axios.get(
-            '/api/getArticleId',
+    componentWillMount() {
+        axios.get(
+            '/api/getUserExperience',
             {
-                attributes: this.state.attributes
+                params: {
+                    email: this.props.email
+                }
+                
             },
             {
                 headers: {'Content-type': 'application/json'}
             }
         ).then((data) => {
-
+            const result = data['data'];
+            console.log(result);
+            this.setState({experience: result});
         })
     }
 
-    getUsers = async () => {
+    
+
+    getArticleId = async() => {
         await axios.get(
-            '/api/getUsers',
+            '/api/getArticleId',
+            {
+                params: {
+                    attributes: this.state.attributes,
+                    email: this.props.email
+                }
+                
+            },
             {
                 headers: {'Content-type': 'application/json'}
             }
         ).then((data) => {
             let details = data['data'];
-            details.map((n) => {
-                const full_name = n.firstname + " " + n.lastname;
-                n['fullname'] = full_name;
-            });
-            this.setState({data: data['data']});
-        })}
+            console.log(details);
 
-    handleUsernameChange = (e) => {
-        this.setState({username: e.target.value});
-        console.log(e.target.value);
+            window.alert('Article ' + details + ' prepared! Ready to continue.' );
+
+            if (details != 'a') {
+                this.setState({articlePrepared: true, articleId: details})
+            }
+        })
+        
     }
-
-    handlePasswordChange = (e) => {
-        this.setState({password: e.target.value});
-        // <img className={classes.icon} src={logo} />
-    }
-
-    handleSubmit = (e) => {
-        //this.getUsers();
-        this.props.submitBehavior();
-    }
-
     onClick = (e) => {
         let checked = e.target.checked;
         let val = e.target.value;
@@ -206,6 +218,8 @@ export default withStyles(styles)(class LoginPage extends React.Component {
     }
 
     render() {
+
+        console.log(this.props.email);
 
         const {classes} = this.props;
         return (
@@ -302,8 +316,8 @@ export default withStyles(styles)(class LoginPage extends React.Component {
 
                     <Grid item>
                         <Grid container spacing={4}>
-                            <Grid item><Button className={classes.loginButton} variant="contained"  onClick={this.handleSubmit}>Generate article!</Button></Grid>
-                            <Grid item><Button classes={{root: classes.loginButton, disabled: classes.loginButtonDisabled}} variant="contained"  onClick={this.handleSubmit} disabled={!this.state.articlePrepared}>Continue</Button></Grid>
+                            <Grid item><Button className={classes.loginButton} variant="contained"  onClick={this.getArticleId}>Generate article!</Button></Grid>
+                            <Grid item><Button component={Link} to={{pathname: "/doc", state: {articleId: this.state.articleId}}} classes={{root: classes.loginButton, disabled: classes.loginButtonDisabled}} variant="contained" disabled={!this.state.articlePrepared}>Continue</Button></Grid>
                         </Grid>
                     </Grid>
                 </Grid>

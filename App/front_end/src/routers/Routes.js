@@ -5,11 +5,12 @@ import Callback from '../auth/CallBack';
 import Auth from '../auth/auth';
 import history from '../auth/history';
 import LoginPage from '../components/LoginPage'
-import NavBar2 from '../components/NavBar2';
-import NavBar3 from '../components/NavBar3'
+import NavBar from '../components/NavBar'
 import { createMuiTheme } from '@material-ui/core/styles';
+import {Link} from "react-router-dom";
 import { ThemeProvider } from '@material-ui/styles';
 import Dashboard from '../components/Dashboard';
+import DocumentPage from '../components/DocumentPage'
 import { useAuth0 } from "../react-auth0-spa";
 
 const theme = createMuiTheme({
@@ -35,7 +36,7 @@ const handleAuthentication = (nextState, replace) => {
 }
 
 function Routes() {
-  const { loading } = useAuth0();
+  const { loading , user} = useAuth0();
 
   if (loading) {
     return <div>Loading...</div>;
@@ -45,16 +46,11 @@ function Routes() {
     <ThemeProvider theme={theme}>
       <Router history={history} component={Home}>
         <div>
-          <NavBar3 auth={auth} />
+          <NavBar auth={auth} />
           <Switch>
             <Route exact path="/" render={(props) => <Home auth={auth}  {...props} />} />
-            <Route path="/home" render={(props) => <Home auth={auth}  {...props} />} />
-            <Route path="/dash" render={(props) => <Dashboard auth={auth} {...props} />} />
-            <Route path="/callback" render={(props) => {
-              console.log('there');
-              handleAuthentication(props);
-              return <Callback {...props} />
-            }}/>
+            <Route path="/dash" render={(props) => <Dashboard auth={auth} email={user.email} {...props} />} />
+            <Route path="/doc" render={(props) => <DocumentPage auth={auth} email={user.email} articleId={props.location.state.articleId} />} />
           </Switch>
         </div>
       </Router>

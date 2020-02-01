@@ -7,9 +7,10 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import People from "@material-ui/icons/People";
 import Icon from "@material-ui/core/Icon";
 import LockIcon from '@material-ui/icons/Lock';
-import NavBar2 from './NavBar2';
+import NavBar from './NavBar';
 import axios from 'axios';
 import BackgroundSlideshow from 'react-background-slideshow'
+import LoginButton from './LoginButton'
 
 import logo from "../images/logo.png";
 import place from "../images/placeholder.png"
@@ -100,36 +101,6 @@ export default withStyles(styles)(class LoginPage extends React.Component {
         data: undefined
     };
 
-    getUsers = async () => {
-        await axios.get(
-            '/api/getUsers',
-            {
-                headers: {'Content-type': 'application/json'}
-            }
-        ).then((data) => {
-            let details = data['data'];
-            details.map((n) => {
-                const full_name = n.firstname + " " + n.lastname;
-                n['fullname'] = full_name;
-            });
-            this.setState({data: data['data']});
-        })}
-
-    handleUsernameChange = (e) => {
-        this.setState({username: e.target.value});
-        console.log(e.target.value);
-    }
-
-    handlePasswordChange = (e) => {
-        this.setState({password: e.target.value});
-        // <img className={classes.icon} src={logo} />
-    }
-
-    handleSubmit = (e) => {
-        //this.getUsers();
-        this.props.submitBehavior();
-    }
-
     render() {
         
         const {classes} = this.props;
@@ -152,7 +123,7 @@ export default withStyles(styles)(class LoginPage extends React.Component {
                     
                     
                     <Grid item xs={3} >
-                        <NavBar2/>
+                        <LoginButton/>
                     </Grid>
                 </Grid>
             </div>

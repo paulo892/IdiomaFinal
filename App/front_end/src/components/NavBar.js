@@ -1,4 +1,5 @@
-import React from 'react';
+import React from "react";
+import { useAuth0 } from "../react-auth0-spa";
 import Paper from '@material-ui/core/Paper';
 
 import Grid from '@material-ui/core/Grid';
@@ -18,10 +19,7 @@ const styles = theme => ({
         marginTop: '2vh',
         marginBottom: '2vh',
         width: '15vw',
-        fontFamily: 'Karla, sans-serif',
         borderStyle: 'solid',
-        
-        fontFamily: 'Karla, sans-serif',
         color: '#2268B2',
         border: 'solid',
         borderColor: '#9CBDD2',
@@ -30,36 +28,37 @@ const styles = theme => ({
     }
 })
 
-export default withStyles(styles)(class NavHeader extends React.Component {
-    render() {
-        const {classes} = this.props;
-        console.log(this.props.auth.isAuthenticated());
-        
-        if (window.location.pathname === '/') return null;
-        {
-            return (
-            <Paper elevation={24} square><header>{this.props.auth.isAuthenticated() &&
-                <Grid container alignItems="center" >
-                    <Grid container item xs={12} sm={3} justify="center">
-                        <img className={classes.logo} src={logo} />
+
+const NavBar = () => {
+  const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
+  //const {classes} = this.props;
+  console.log(isAuthenticated);
+
+  return (
+    <div >
+        {isAuthenticated && <Paper elevation={10} style={{position: 'fixed', width: '100vw'}} square>
+            <Grid container alignItems="center" >
+                <Grid container item xs={12} sm={3} justify="center">
+                    <img style={{marginTop: '2vh', marginBottom: '2vh', width: '300px'}} src={logo} />
+                </Grid>
+                <Grid container xs={12} sm={9} item justify="space-around" >
+                    <Grid item>
+                        <NavLink to="/dash" style={{ textDecoration: 'none'}}><Button style={{marginTop: '2vh',marginBottom: '2vh',width: '15vw',borderStyle: 'solid',color: '#2268B2',border: 'solid',borderColor: '#9CBDD2',backgroundColor: "#f5f5f5", fontSize: '1em',}} variant="contained" >Learning Center</Button></NavLink>
                     </Grid>
-                    <Grid container xs={12} sm={9} item justify="space-around" >
-                        <Grid item>
-                            <NavLink to="/dash" style={{ textDecoration: 'none'}}><Button className={classes.headerButton} variant="contained" >Learning Center</Button></NavLink>
-                        </Grid>
-                        <Grid item>
-                            <Button className={classes.headerButton} variant="contained" >My Documents</Button>
-                        </Grid>
-                        <Grid item>
-                            <Button className={classes.headerButton} variant="contained" >Achievements</Button>
-                        </Grid>
-                        <Grid item>
-                            <Button className={classes.headerButton} variant="contained"  onClick={this.props.handleSubmit}>Logout</Button>
-                        </Grid>
+                    <Grid item>
+                        <Button style={{marginTop: '2vh',marginBottom: '2vh',width: '15vw',borderStyle: 'solid',color: '#2268B2',border: 'solid',borderColor: '#9CBDD2',backgroundColor: "#f5f5f5", fontSize: '1em',}} variant="contained" >My Documents</Button>
+                    </Grid>
+                    <Grid item>
+                        <Button style={{marginTop: '2vh',marginBottom: '2vh',width: '15vw',borderStyle: 'solid',color: '#2268B2',border: 'solid',borderColor: '#9CBDD2',backgroundColor: "#f5f5f5", fontSize: '1em',}} variant="contained" >Achievements</Button>
+                    </Grid>
+                    <Grid item>
+                        <Button style={{marginTop: '2vh',marginBottom: '2vh',width: '15vw',borderStyle: 'solid',color: '#2268B2',border: 'solid',borderColor: '#9CBDD2',backgroundColor: "#f5f5f5", fontSize: '1em',}} variant="contained"  onClick={() => logout()}>Log out!</Button>
                     </Grid>
                 </Grid>
-        }</header></Paper>
-        );
-        }
-    }
-})
+            </Grid>
+        </Paper>}
+    </div>
+  );
+};
+
+export default NavBar;
