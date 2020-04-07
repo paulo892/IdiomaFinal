@@ -1,59 +1,23 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import { Grid } from '@material-ui/core';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
-import InputAdornment from "@material-ui/core/InputAdornment";
-import People from "@material-ui/icons/People";
-import Icon from "@material-ui/core/Icon";
-import LockIcon from '@material-ui/icons/Lock';
 import {Link} from "react-router-dom";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import FolderIcon from '@material-ui/icons/Folder';
 import TableRow from '@material-ui/core/TableRow';
-import Avatar from '@material-ui/core/Avatar';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 import TextField from '@material-ui/core/TextField';
 import TableHead from '@material-ui/core/TableHead';
-import Toolbar from '@material-ui/core/Toolbar';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
-
-
-
-
-
-import Checkbox from '@material-ui/core/Checkbox';
 import axios from 'axios';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
 import Typography from '@material-ui/core/Typography';
 
-import logo from "../images/logo.png";
-import number_1 from "../images/number_1.png";
-import number_2 from "../images/number_2.png";
-import beginner from "../images/beginner.png";
-
-const achievement_to_art = {
-    "5dd603c61c9d4400004cadd8": number_1,
-    "5dd604231c9d4400004cadda": number_2,
-    "5e655fb81c9d440000df11a1": beginner
-}
-
-
 const styles = theme => ({
-    root: {
-        backgroundImage: logo,
-    },
-    loginButton: {
+    button: {
         color: '#2268B2',
         border: 'solid',
         borderColor: '#9CBDD2',
@@ -63,7 +27,7 @@ const styles = theme => ({
         marginTop: '5vh',
         textAlign: 'center'
     },
-    loginButtonDisabled: {
+    buttonDisabled: {
         color: '#2268B2',
         border: 'solid',
         borderColor: '#9CBDD2',
@@ -75,83 +39,20 @@ const styles = theme => ({
         marginTop: '5vh',
         textAlign: 'center'
     },
-    headerPaper: {
-        marginTop: '25vh',
-        color: '#2268B2',
-        paddingTop: '6vh',
-        paddingRight: '3vw',
-        paddingLeft: '3vw',
-        backgroundColor: '#f5f5f5',
-        paddingBottom: '3vh',
-        width: '50vw'
-    },
-    textPaper: {
-        marginTop: '5vh',
-        color: '#2268B2',
-        paddingTop: '1vw',
-        paddingRight: '3vw',
-        borderColor: '#2268B2',
-        paddingLeft: '3vw',
-        backgroundColor: '#f5f5f5',
-        paddingBottom: '3vh',
-        width: '50vw'
-    },
     backgroundDiv: {
         backgroundColor: '#7AB4D8',
         height: 'auto'
     },
-    questionPaper: {
+    titlePaper: {
         marginTop: '25vh',
         color: '#2268B2',
         fontFamily: 'Karla, sans-serif',
-        //paddingTop: '0.5vh',
         paddingRight: '5vw',
         borderColor: '#2268B2',
         paddingLeft: '5vw',
         height: '15vh',
         backgroundColor: '#f5f5f5',
-        //paddingBottom: '2vh',
-        marginBottom: '10vh',
-        //width: '50vw'.
-        
-    },
-    achievementsPaper: {
-        color: '#2268B2',
-        fontFamily: 'Karla, sans-serif',
-        width: '50vw',
-        paddingLeft: '2vw',
-        paddingRight: '2vw',
-        paddingTop: '4vh',
-        paddingBottom: '4vh',
-        marginBottom: '4vh'
-        /*border: 'solid',
-        borderStyle: 'solid',
-        borderColor: '#2268B2',*/
-    },
-    achievementRow: {
-        height: '15vh',
-        
-    },
-    achievementBadge: {
-        height: '15vh',
-        width: '15vh',
-        border: 'solid',
-        borderStyle: 'solid',
-        borderColor: '#2268B2',
-        backgroundColor: 'white'
-    },
-    achievementIcon: {
-        height: '10vh',
-        width: '10vh'
-    },
-    pointsBadge: {
-        height: '12vh',
-        width: '12vh',
-        backgroundColor: '#2268B2',
-        color: 'white',
-    },
-    badgeImage: {
-        height: '13vh'
+        marginBottom: '10vh',        
     },
     table: {
         width: '60vw'
@@ -199,7 +100,7 @@ function getSorting(order, orderBy) {
     return order === 'desc' ? (a,b) => desc(a,b,orderBy) : (a,b) => -desc(a,b,orderBy);
 }
 
-export default withStyles(styles)(class AchievementsPage extends React.Component {
+export default withStyles(styles)(class MyDocumentsPage extends React.Component {
 
     state = {
         orderBy: 'title',
@@ -209,7 +110,7 @@ export default withStyles(styles)(class AchievementsPage extends React.Component
     }
 
     getDocuments = async() => {
-        // TODO - implement back-end
+        console.log(this.state.search)
         await axios.get(
             '/api/getUserDocuments',
             {
@@ -224,12 +125,12 @@ export default withStyles(styles)(class AchievementsPage extends React.Component
         ).then((data) => {
             // saves the documents
             let documents = data['data'];
-            console.log(documents);
+            //console.log(this.state.search);
 
             // converts each document to JS dictionary
             var conv_docs = {}
             for (var key in documents) {
-                console.log(key);
+                //console.log(key);
                 conv_docs[key] = JSON.parse(documents[key]);
             }
 
@@ -238,7 +139,7 @@ export default withStyles(styles)(class AchievementsPage extends React.Component
             for (var key in conv_docs) {
                 doc_list.push(conv_docs[key]);
             }
-            console.log(doc_list)
+            //console.log(doc_list)
 
             this.setState({docs: doc_list});
         })
@@ -249,12 +150,11 @@ export default withStyles(styles)(class AchievementsPage extends React.Component
     }
 
     handleSearchChange = (e) => {
-        //this.setState({search: e.target.value});
-
-        //this.getDocuments();
+        console.log('B')
+        this.setState({search: e.target.value}, () => this.getDocuments());
     }
 
-    handleRequestSort = (event, property) => {
+    handleRequestSort = property => event => {
         const orderBy = property;
         let order = 'desc';
 
@@ -262,14 +162,7 @@ export default withStyles(styles)(class AchievementsPage extends React.Component
         this.setState({order, orderBy});
     };
 
-    // TODO - potentially remove this function to consolidate
-    createSortHandler = property => event => {
-        // TODO
-        console.log('SORT');
-
-        this.handleRequestSort(event, property);
-    }
-
+    // TODO - routing and other component
     isSelected = property => {
         console.log('success');
     }
@@ -294,7 +187,7 @@ export default withStyles(styles)(class AchievementsPage extends React.Component
                         alignItems="center"
                         justify="center"
                     >
-                        <Paper rounded elevation={10} className={classes.questionPaper}>
+                        <Paper rounded elevation={10} className={classes.titlePaper}>
                             <Typography style={{paddingTop: '4.5vh'}} variant="h3">My Documents</Typography>
                         </Paper>
                     </Grid>
@@ -321,7 +214,7 @@ export default withStyles(styles)(class AchievementsPage extends React.Component
                                                     <TableSortLabel
                                                         active={this.state.orderBy === label.id && !(label.id === 'link')}
                                                         direction={this.state.order}
-                                                        onClick={this.createSortHandler(label.id)}
+                                                        onClick={this.handleRequestSort(label.id)}
                                                     >
                                                         <Typography style={{color: '#3D8AC8'}} variant="h6">{label.label}</Typography>
                                                     </TableSortLabel>
@@ -357,7 +250,7 @@ export default withStyles(styles)(class AchievementsPage extends React.Component
 
                     <Grid item>
                         <Grid container spacing={4}>
-                        <Grid item><Button component={Link} to="/dash" classes={{root: classes.loginButton, disabled: classes.loginButtonDisabled}} variant="contained">
+                        <Grid item><Button component={Link} to="/dash" classes={{root: classes.button, disabled: classes.buttonDisabled}} variant="contained">
                             <Typography variant="button">Back to Learning Center</Typography></Button></Grid>
                         </Grid>
                         

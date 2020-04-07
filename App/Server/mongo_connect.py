@@ -326,14 +326,14 @@ def get_article_data():
 
 @app.route('/api/getUserDocuments', methods=['GET', 'POST'])
 def get_user_documents():
-    # takes in user email from request
+    # takes in user email and search term from request
     email = request.args['email']
-    print('REQUESTSYH')
+    search = request.args['search']
+    print('.*' + search + '.*')
 
     # returns the user information
     userquery = {"email": email}
     cursor = users.find(userquery)
-    print('REQUESTSYF')
 
     if (cursor.count() > 1):
         print('ERROR: More than one user with same email.')
@@ -342,20 +342,21 @@ def get_user_documents():
 
     # extracts the documents seen by user
     docs_seen = usr['documents_seen']
-    print(docs_seen)
     
 
     docs = {}
     for doc in docs_seen:
         # creates and runs query to find its data
-        docquery = {"_id": ObjectId(doc)}
+        docquery = {"_id": ObjectId(doc), 'title': {'$regex': '.*' + search + '.*'}}
         print(ObjectId(doc))
         cursor = documents.find(docquery)
 
         # gets the document data and appends to list
+        if cursor.count() == 0:
+            print('oops')
+            continue
         document = cursor[0]
         docs[str(document['_id'])] = JSONEncoder().encode(document)
-    print('REQUESTSYJ')
     
     return jsonify(docs)
 
