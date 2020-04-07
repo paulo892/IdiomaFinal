@@ -110,7 +110,28 @@ export default withStyles(styles)(class DocumentPage extends React.Component {
             const result = data['data'];
             console.log(result);
             this.setState({article: result});
+            
         })
+    }
+
+    updateUser = async() => {
+        console.log('sifsjf');
+        console.log(this.state.article['_id']);
+        await axios.post(
+            '/api/updateUser',
+            {
+                articleViewed: this.state.article['_id'],
+                articleFeatures: this.state.article['features'],
+                email: this.props.email
+                
+            },
+            {
+                headers: {'Content-type': 'application/json'}
+            }
+        ).then((data) => {
+            console.log('Done');
+        })
+        
     }
 
     
@@ -161,12 +182,15 @@ export default withStyles(styles)(class DocumentPage extends React.Component {
 
                     <Grid item>
                         <Grid container spacing={4}>
-                        <Grid item><Button component={Link} to="/dash" classes={{root: classes.loginButton, disabled: classes.loginButtonDisabled}} variant="contained">
+                        <Grid item><Button component={Link} to="/dash" classes={{root: classes.loginButton, disabled: classes.loginButtonDisabled}} onClick={this.updateUser} variant="contained">
                             <Typography variant="button">Continue</Typography></Button></Grid>
                         </Grid>
+                        
                     </Grid>
                 </Grid>
             </div>
         )
     }
 })
+
+//<Grid item><Button component={Link} to={{pathname: "/doc", state: {articleId: this.state.articleId}}} classes={{root: classes.loginButton, disabled: classes.loginButtonDisabled}} variant="contained" disabled={!this.state.articlePrepared}>Continue</Button></Grid>

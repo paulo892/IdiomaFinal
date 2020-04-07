@@ -12,6 +12,9 @@ import { ThemeProvider } from '@material-ui/styles';
 import Dashboard from '../components/Dashboard';
 import DocumentPage from '../components/DocumentPage'
 import { useAuth0 } from "../react-auth0-spa";
+import Temp from '../components/Temp';
+import AchievementsPage from '../components/AchievementsPage';
+import MyDocumentsPage from '../components/MyDocumentsPage';
 
 const theme = createMuiTheme({
   typography: {
@@ -51,6 +54,8 @@ function Routes() {
             <Route exact path="/" render={(props) => <Home auth={auth}  {...props} />} />
             <Route path="/dash" render={(props) => <Dashboard auth={auth} email={user.email} {...props} />} />
             <Route path="/doc" render={(props) => <DocumentPage auth={auth} email={user.email} articleId={props.location.state.articleId} />} />
+            <Route path="/mydocs" render={(props) => <MyDocumentsPage auth={auth} email={user.email}/>} />
+            <Route path="/achievements" render={(props) => <AchievementsPage auth={auth} email={user.email}/>} />
           </Switch>
         </div>
       </Router>

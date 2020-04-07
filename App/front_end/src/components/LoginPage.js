@@ -15,12 +15,14 @@ import LoginButton from './LoginButton'
 import logo from "../images/logo.png";
 import place from "../images/placeholder.png"
 import alentejo from "../images/alentejo.jpg"
+import casas from "../images/casas.jpg"
+import coastline from "../images/coastline.jpg"
+import plains from "../images/plains.jpg"
+import hillside from "../images/hillside.jpg"
+import sintra from "../images/sintra.jpeg"
 
-const BackgroundHead = {
-    backgroundImage: 'url('+ alentejo+')',
-    width: '100vw',
-    backgroundSize: 'cover'
-    }
+
+
 
 
 const styles = theme => ({
@@ -98,14 +100,39 @@ export default withStyles(styles)(class LoginPage extends React.Component {
         username: undefined,
         password: undefined,
         isClicked: false,
-        data: undefined
+        data: undefined,
+        background: plains
     };
+
+    BackgroundHead = {
+        backgroundImage: null,
+        height: '100vh',
+        backgroundSize: 'cover'
+        }
+
+    componentDidMount() {
+
+        const rand = Math.floor(Math.random() * 4);
+        console.log(rand);
+        if (rand == 0) {
+            this.setState({background: hillside});
+        }
+        else if (rand == 1) {
+            this.setState({background: sintra});
+        }
+        else if (rand == 2) {
+            this.setState({background: coastline});
+        }
+        else if (rand == 3) {
+            this.setState({background: plains});
+        }
+    }
 
     render() {
         
         const {classes} = this.props;
         return (
-            <div style={BackgroundHead}>
+            <div style={{backgroundImage: 'url('+ this.state.background +')',height: '100vh',backgroundSize: 'cover'}}>
                 <Grid
                     container
                     spacing={0}

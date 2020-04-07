@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
+
 const styles = theme => ({
     logo: {
         marginTop: '2vh',
@@ -36,7 +37,7 @@ const NavBar = () => {
 
   return (
     <div >
-        {isAuthenticated && <Paper elevation={10} style={{position: 'fixed', width: '100vw'}} square>
+        {isAuthenticated && <Paper elevation={10} style={{position: 'fixed', width: '100vw', zIndex: 10000}} square>
             <Grid container alignItems="center" >
                 <Grid container item xs={12} sm={3} justify="center">
                     <img style={{marginTop: '2vh', marginBottom: '2vh', width: '300px'}} src={logo} />
@@ -46,10 +47,10 @@ const NavBar = () => {
                         <NavLink to="/dash" style={{ textDecoration: 'none'}}><Button style={{marginTop: '2vh',marginBottom: '2vh',width: '15vw',borderStyle: 'solid',color: '#2268B2',border: 'solid',borderColor: '#9CBDD2',backgroundColor: "#f5f5f5", fontSize: '1em',}} variant="contained" >Learning Center</Button></NavLink>
                     </Grid>
                     <Grid item>
-                        <Button style={{marginTop: '2vh',marginBottom: '2vh',width: '15vw',borderStyle: 'solid',color: '#2268B2',border: 'solid',borderColor: '#9CBDD2',backgroundColor: "#f5f5f5", fontSize: '1em',}} variant="contained" >My Documents</Button>
+                        <NavLink to="/mydocs" style={{ textDecoration: 'none'}}><Button style={{marginTop: '2vh',marginBottom: '2vh',width: '15vw',borderStyle: 'solid',color: '#2268B2',border: 'solid',borderColor: '#9CBDD2',backgroundColor: "#f5f5f5", fontSize: '1em',}} variant="contained" >My Documents</Button></NavLink>
                     </Grid>
                     <Grid item>
-                        <Button style={{marginTop: '2vh',marginBottom: '2vh',width: '15vw',borderStyle: 'solid',color: '#2268B2',border: 'solid',borderColor: '#9CBDD2',backgroundColor: "#f5f5f5", fontSize: '1em',}} variant="contained" >Achievements</Button>
+                        <NavLink to="/achievements" style={{ textDecoration: 'none'}}><Button style={{marginTop: '2vh',marginBottom: '2vh',width: '15vw',borderStyle: 'solid',color: '#2268B2',border: 'solid',borderColor: '#9CBDD2',backgroundColor: "#f5f5f5", fontSize: '1em',}} variant="contained" >Achievements</Button></NavLink>
                     </Grid>
                     <Grid item>
                         <Button style={{marginTop: '2vh',marginBottom: '2vh',width: '15vw',borderStyle: 'solid',color: '#2268B2',border: 'solid',borderColor: '#9CBDD2',backgroundColor: "#f5f5f5", fontSize: '1em',}} variant="contained"  onClick={() => logout()}>Log out!</Button>

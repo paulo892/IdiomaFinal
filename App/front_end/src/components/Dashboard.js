@@ -102,7 +102,7 @@ const styles = theme => ({
         color: 'red !important'
     },
     questionPaper: {
-        marginTop: '25vh',
+        marginTop: '30vh',
         color: '#2268B2',
         fontFamily: 'Karla, sans-serif',
         paddingTop: '1vw',
@@ -114,9 +114,6 @@ const styles = theme => ({
         marginBottom: '10vh',
         width: '50vw'
     },
-    backgroundDiv: {
-        color: '#58ABDE'
-    },
     expansionPanel: {
         backgroundColor: '#f5f5f5',
         marginBottom: '5vh',
@@ -125,7 +122,8 @@ const styles = theme => ({
     },
     backgroundDiv: {
         backgroundColor: '#58ABDE',
-        height: 'auto'
+        height: '100vh',
+        width: '100vw'
     }
 })
 
@@ -135,11 +133,10 @@ const styles = theme => ({
 
 export default withStyles(styles)(class LoginPage extends React.Component {
 
-    beginner_topics = ['Numeros', 'Ser vs. Estar', 'Pretérito'];
-    intermediate_topics = ['Uma coisa', 'Outra coisa', 'Uma terceira coisa', 'Uma final coisa'];
-    advanced_topics = ['COS', 'POR'];
-
-    
+    // TODO - Better sort these topics
+    beginner_topics = ['Números', 'Preposições', 'Superlativos', 'Interrogativos', "Presente Indicativo (Regular)", "Presente Indicativo (Irregular)", "Ser vs. Estar"];
+    intermediate_topics = ["Pretérito Indicativo (Regular)", "Pretérito Indicativo (Irregular)", "Imperfeito (Regular)", "Imperfeito (Irregular)","Presente Gerúndio","Presente Subjuntivo (Regular)","Presente Indicativo (Irregular)"];
+    advanced_topics = ["Passado Subjuntivo (Regular)","Passado Subjuntivo (Irregular)","Presente Perfeito","Pretérito Perfeito","Futúro Indicativo (Regular)","Futúro Indicativo (Irregular)","Futúro Perfeito","Condicional (Regular)","Condicional (Irregular)"];
 
     state = {
         attributes: [],
