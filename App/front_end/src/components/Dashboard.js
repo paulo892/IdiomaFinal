@@ -17,10 +17,11 @@ import FormGroup from '@material-ui/core/FormGroup';
 import {Link} from "react-router-dom";
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { NavLink } from 'react-router-dom';
-import DocumentPage from './DocumentPage'
+import DocumentPageFT from './DocumentPageFT'
 
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
+import Typography from '@material-ui/core/Typography';
 
 import logo from "../images/logo.png";
 
@@ -37,7 +38,7 @@ const styles = theme => ({
         fontSize: '1em',
         paddingTop: '1vh',
         paddingBottom: '1vh',
-        marginBottom: '15vh',
+        marginBottom: '3vh',
         marginTop: '5vh',
         textAlign: 'center'
     },
@@ -49,7 +50,7 @@ const styles = theme => ({
         fontSize: '1em',
         paddingTop: '1vh',
         paddingBottom: '1vh',
-        marginBottom: '15vh',
+        marginBottom: '3vh',
         marginTop: '5vh',
         textAlign: 'center'
     },
@@ -102,7 +103,7 @@ const styles = theme => ({
         color: 'red !important'
     },
     questionPaper: {
-        marginTop: '30vh',
+        marginTop: '5vh',
         color: '#2268B2',
         fontFamily: 'Karla, sans-serif',
         paddingTop: '1vw',
@@ -111,20 +112,33 @@ const styles = theme => ({
         paddingLeft: '3vw',
         backgroundColor: '#f5f5f5',
         paddingBottom: '3vh',
-        marginBottom: '10vh',
-        width: '50vw'
+        marginBottom: '5vh',
+        width: '30vw',
+        textAlign: 'center'
     },
     expansionPanel: {
         backgroundColor: '#f5f5f5',
-        marginBottom: '5vh',
+        marginBottom: '3vh',
         color: '#2268B2',
-        width: '25vw'
+        width: '15vw'
     },
     backgroundDiv: {
-        backgroundColor: '#58ABDE',
-        height: '100vh',
+        backgroundColor: '#7AB4D8',
+        height: 'auto',
         width: '100vw'
-    }
+    },
+
+    titlePaper: {
+        marginTop: '22vh',
+        color: '#2268B2',
+        fontFamily: 'Karla, sans-serif',
+        paddingRight: '5vw',
+        borderColor: '#2268B2',
+        paddingLeft: '5vw',
+        height: '15vh',
+        backgroundColor: '#f5f5f5',
+        marginBottom: '5vh',        
+    },
 })
 
 
@@ -137,6 +151,8 @@ export default withStyles(styles)(class LoginPage extends React.Component {
     beginner_topics = ['Números', 'Preposições', 'Superlativos', 'Interrogativos', "Presente Indicativo (Regular)", "Presente Indicativo (Irregular)", "Ser vs. Estar"];
     intermediate_topics = ["Pretérito Indicativo (Regular)", "Pretérito Indicativo (Irregular)", "Imperfeito (Regular)", "Imperfeito (Irregular)","Presente Gerúndio","Presente Subjuntivo (Regular)","Presente Indicativo (Irregular)"];
     advanced_topics = ["Passado Subjuntivo (Regular)","Passado Subjuntivo (Irregular)","Presente Perfeito","Pretérito Perfeito","Futúro Indicativo (Regular)","Futúro Indicativo (Irregular)","Futúro Perfeito","Condicional (Regular)","Condicional (Irregular)"];
+    countries = ["Portugal", "Brazil", "Angola", "Mozambique"]
+    topics = ['Politics', 'Science', 'Technology', 'Economics', 'Culture']
 
     state = {
         attributes: [],
@@ -227,94 +243,192 @@ export default withStyles(styles)(class LoginPage extends React.Component {
                     direction="column"
                     alignItems="center"
                     justify="center"
-                >
-                
-                    <Paper rounded elevation={10} className={classes.questionPaper}>
-                        <div style={{textAlign: 'center'}}><h1>What have you been working on recently?</h1></div>
-                    </Paper>
+                >  
+                    <Grid 
+                        item
+                        spacing={0}
+                        alignItems="center"
+                        justify="center"
+                    >
+                        <Paper rounded elevation={10} className={classes.titlePaper}>
+                            <Typography style={{paddingTop: '4.5vh'}} variant="h3">Learning Center</Typography>
+                        </Paper>
+                    </Grid>
 
                     <Grid
                         container
-                        alignItems="center"
+                        direction="row"
+                        alignItems="flex-start"
                         justify="center"
-                        spacing={7}
                     >
-                        <Grid item styles={{marginRight: '2vw', marginLeft: '2vw'}}>
-                            <ExpansionPanel elevation={5} classes={{root:classes.expansionPanel, expanded:classes.temp2}}>
-                                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} styles={{marginRight: '2vw', marginLeft: '2vw'}}>
-                                    Beginner
-                                </ExpansionPanelSummary>
-                                <ExpansionPanelDetails styles={{marginRight: '2vw', marginLeft: '2vw'}}>
-                                    <FormControl component="fieldset" >
-                                        <Grid container direction='row'>
-                                            {this.beginner_topics.map((topic) => {
-                                                return <FormControlLabel 
-                                                    classes={{label: classes.temp2}}
-                                                    value={topic}
-                                                    control={<Checkbox color="primary" />}
-                                                    label={topic}
-                                                    labelPlacement="start"
-                                                    onChange={this.onClick}
-                                                />
-                                            })}
-                                        </Grid>
-                                    </FormControl>    
-                                </ExpansionPanelDetails>
-                            </ExpansionPanel>
+                        <Grid 
+                            item container
+                            spacing={0}
+                            xs={6}
+                            direction="column"
+                            alignItems="center"
+                            justify="center"
+                        >
+                            <Grid item justify="center">
+                                <Paper rounded elevation={5} className={classes.questionPaper}>
+                                    <Typography variant="h4">What would you like to learn about today?</Typography>
+                                </Paper>
+                            </Grid>
+                            <Grid
+                                container item
+                                alignItems="center"
+                                justify="center"
+                            >
+                                <Grid item xs={4} justify="center" styles={{marginRight: '2vw', marginLeft: '2vw'}}>
+                                    <ExpansionPanel elevation={5} classes={{root:classes.expansionPanel, expanded:classes.temp2}}>
+                                        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} styles={{marginRight: '2vw', marginLeft: '2vw'}}>
+                                            <Typography variant="h5">Countries</Typography>
+                                        </ExpansionPanelSummary>
+                                        <ExpansionPanelDetails styles={{marginRight: '2vw', marginLeft: '2vw'}}>
+                                            <FormControl component="fieldset" >
+                                                <Grid container direction='row'>
+                                                    {this.countries.map((topic) => {
+                                                        return <FormControlLabel 
+                                                            classes={{label: classes.temp2}}
+                                                            value={topic}
+                                                            control={<Checkbox color="primary" />}
+                                                            label={topic}
+                                                            labelPlacement="start"
+                                                            onChange={this.onClick}
+                                                        />
+                                                    })}
+                                                </Grid>
+                                            </FormControl>    
+                                        </ExpansionPanelDetails>
+                                    </ExpansionPanel>
+                                </Grid>
+                                <Grid item xs={4} justify="center">
+                                    <ExpansionPanel classes={{root:classes.expansionPanel, expanded:classes.temp2}} elevation={5}>
+                                        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} styles={{marginRight: '2vw', marginLeft: '2vw'}}>
+                                        <Typography variant="h5">Topics</Typography>
+                                        </ExpansionPanelSummary>
+                                        <ExpansionPanelDetails styles={{marginRight: '2vw', marginLeft: '2vw'}}>
+                                            <FormControl component="fieldset" >
+                                                <Grid container direction='row'>
+                                                    {this.topics.map((topic) => {
+                                                        return <FormControlLabel 
+                                                            classes={{label: classes.temp2}}
+                                                            value={topic}
+                                                            control={<Checkbox color="primary" />}
+                                                            label={topic}
+                                                            labelPlacement="start"
+                                                            onChange={this.onClick}
+                                                        />
+                                                    })}
+                                                </Grid>
+                                            </FormControl>    
+                                        </ExpansionPanelDetails>
+                                    </ExpansionPanel>
+                                </Grid>
+
+                            </Grid>
                         </Grid>
-                        <Grid item>
-                            <ExpansionPanel classes={{root:classes.expansionPanel, expanded:classes.temp2}} elevation={5}>
-                                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} styles={{marginRight: '2vw', marginLeft: '2vw'}}>
-                                    Intermediate
-                                </ExpansionPanelSummary>
-                                <ExpansionPanelDetails styles={{marginRight: '2vw', marginLeft: '2vw'}}>
-                                    <FormControl component="fieldset" >
-                                        <Grid container direction='row'>
-                                            {this.intermediate_topics.map((topic) => {
-                                                return <FormControlLabel 
-                                                    classes={{label: classes.temp2}}
-                                                    value={topic}
-                                                    control={<Checkbox color="primary" />}
-                                                    label={topic}
-                                                    labelPlacement="start"
-                                                    onChange={this.onClick}
-                                                />
-                                            })}
-                                        </Grid>
-                                    </FormControl>    
-                                </ExpansionPanelDetails>
-                            </ExpansionPanel>
-                        </Grid>
-                        <Grid item>
-                            <ExpansionPanel classes={{root:classes.expansionPanel, expanded:classes.temp2}} elevation={5} >
-                                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} styles={{marginRight: '2vw', marginLeft: '2vw'}}>
-                                    Advanced
-                                </ExpansionPanelSummary>
-                                <ExpansionPanelDetails styles={{marginRight: '2vw', marginLeft: '2vw'}}>
-                                    <FormControl component="fieldset" >
-                                        <Grid container direction='row'>
-                                            {this.advanced_topics.map((topic) => {
-                                                return <FormControlLabel 
-                                                    classes={{label: classes.temp2}}
-                                                    value={topic}
-                                                    control={<Checkbox color="primary" />}
-                                                    label={topic}
-                                                    labelPlacement="start"
-                                                    onChange={this.onClick}
-                                                />
-                                            })}
-                                        </Grid>
-                                    </FormControl>    
-                                </ExpansionPanelDetails>
-                            </ExpansionPanel>
+                        <Grid 
+                            item container
+                            direction="column"
+                            xs={6}
+                            alignItems="center"
+                            justify="center"
+                        >
+                            <Grid item>
+                                <Paper rounded elevation={5} className={classes.questionPaper}>
+                                    <Typography variant="h4">What subjects would you like to cover?</Typography>
+                                </Paper>
+                            </Grid>
+                            <Grid
+                                container item
+                                alignItems="center"
+                                justify="center"
+                            >
+                                <Grid item xs={4} styles={{marginRight: '2vw', marginLeft: '2vw'}}>
+                                    <ExpansionPanel elevation={5} classes={{root:classes.expansionPanel, expanded:classes.temp2}}>
+                                        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} styles={{marginRight: '2vw', marginLeft: '2vw'}}>
+                                            <Typography variant="h5">Beginner</Typography>
+                                        </ExpansionPanelSummary>
+                                        <ExpansionPanelDetails styles={{marginRight: '2vw', marginLeft: '2vw'}}>
+                                            <FormControl component="fieldset" >
+                                                <Grid container direction='row'>
+                                                    {this.beginner_topics.map((topic) => {
+                                                        return <FormControlLabel 
+                                                            classes={{label: classes.temp2}}
+                                                            value={topic}
+                                                            control={<Checkbox color="primary" />}
+                                                            label={topic}
+                                                            labelPlacement="start"
+                                                            onChange={this.onClick}
+                                                        />
+                                                    })}
+                                                </Grid>
+                                            </FormControl>    
+                                        </ExpansionPanelDetails>
+                                    </ExpansionPanel>
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <ExpansionPanel classes={{root:classes.expansionPanel, expanded:classes.temp2}} elevation={5}>
+                                        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} styles={{marginRight: '2vw', marginLeft: '2vw'}}>
+                                        <Typography variant="h5">Intermediate</Typography>
+                                        </ExpansionPanelSummary>
+                                        <ExpansionPanelDetails styles={{marginRight: '2vw', marginLeft: '2vw'}}>
+                                            <FormControl component="fieldset" >
+                                                <Grid container direction='row'>
+                                                    {this.intermediate_topics.map((topic) => {
+                                                        return <FormControlLabel 
+                                                            classes={{label: classes.temp2}}
+                                                            value={topic}
+                                                            control={<Checkbox color="primary" />}
+                                                            label={topic}
+                                                            labelPlacement="start"
+                                                            onChange={this.onClick}
+                                                        />
+                                                    })}
+                                                </Grid>
+                                            </FormControl>    
+                                        </ExpansionPanelDetails>
+                                    </ExpansionPanel>
+                                </Grid>
+                            </Grid>
+                            <Grid
+                                container item
+                                alignItems="center"
+                                justify="center"
+                            >             
+                                <Grid item xs={4}>
+                                    <ExpansionPanel classes={{root:classes.expansionPanel, expanded:classes.temp2}} elevation={5} >
+                                        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} styles={{marginRight: '2vw', marginLeft: '2vw'}}>
+                                            <Typography variant="h5">Advanced</Typography>
+                                        </ExpansionPanelSummary>
+                                        <ExpansionPanelDetails styles={{marginRight: '2vw', marginLeft: '2vw'}}>
+                                            <FormControl component="fieldset" >
+                                                <Grid container direction='row'>
+                                                    {this.advanced_topics.map((topic) => {
+                                                        return <FormControlLabel 
+                                                            classes={{label: classes.temp2}}
+                                                            value={topic}
+                                                            control={<Checkbox color="primary" />}
+                                                            label={topic}
+                                                            labelPlacement="start"
+                                                            onChange={this.onClick}
+                                                        />
+                                                    })}
+                                                </Grid>
+                                            </FormControl>    
+                                        </ExpansionPanelDetails>
+                                    </ExpansionPanel>
+                                </Grid>
+
+                            </Grid>
                         </Grid>
 
                     </Grid>
-
                     <Grid item>
                         <Grid container spacing={4}>
                             <Grid item><Button className={classes.loginButton} variant="contained"  onClick={this.getArticleId}>Generate article!</Button></Grid>
-                            <Grid item><Button component={Link} to={{pathname: "/doc", state: {articleId: this.state.articleId}}} classes={{root: classes.loginButton, disabled: classes.loginButtonDisabled}} variant="contained" disabled={!this.state.articlePrepared}>Continue</Button></Grid>
+                            <Grid item><Button component={Link} to={{pathname: "/docft", state: {articleId: this.state.articleId}}} classes={{root: classes.loginButton, disabled: classes.loginButtonDisabled}} variant="contained" disabled={!this.state.articlePrepared}>Continue</Button></Grid>
                         </Grid>
                     </Grid>
                 </Grid>

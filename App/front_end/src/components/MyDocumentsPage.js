@@ -23,8 +23,8 @@ const styles = theme => ({
         borderColor: '#9CBDD2',
         backgroundColor: "#f5f5f5",
         fontSize: '1em',
-        marginBottom: '15vh',
-        marginTop: '5vh',
+        marginBottom: '3vh',
+        marginTop: '10vh',
         textAlign: 'center'
     },
     buttonDisabled: {
@@ -41,10 +41,11 @@ const styles = theme => ({
     },
     backgroundDiv: {
         backgroundColor: '#7AB4D8',
-        height: 'auto'
+        height: 'auto',
+        width: '100vw'
     },
     titlePaper: {
-        marginTop: '25vh',
+        marginTop: '22vh',
         color: '#2268B2',
         fontFamily: 'Karla, sans-serif',
         paddingRight: '5vw',
@@ -55,13 +56,14 @@ const styles = theme => ({
         marginBottom: '10vh',        
     },
     table: {
-        width: '60vw'
+        width: '70vw',
+        alignItems: 'center'
     },
     documentIcon: {
         color: '#2268B2'
     },
     searchUnderline: {
-        color: '#2268B2'
+        color: '#2268B2',
     },
     searchFieldLabel: {
         color: '#4c5152'
@@ -69,6 +71,43 @@ const styles = theme => ({
     searchField: {
         color: '#2268B2'
     },
+    searchGrid: {
+        marginTop: '1vh',
+        marginRight: '1vw'
+    },
+    searchAndIconGrid: {
+        marginBottom: '2vh'
+    },
+    labelCell: {
+        textAlign: 'center'
+    },
+    sortTooltip: {
+        color: '#2268B2 !important' 
+    },
+    titleCell: {
+        width: '20vw',
+        textDecoration: 'none',
+        marginBottom: '1vh'
+    },
+    subtitleCell: {
+        width: '15vw',
+        textDecoration: 'none'
+    },
+    authorCell: {
+        width: '10vw',
+        textDecoration: 'none'
+    },
+    urlCell: {
+        width: '15vw'
+    },
+    tableRow: {
+        textDecoration: 'none'
+    },
+    loadingText: {
+        color: '#2268B2',
+        marginTop: '4vh',
+        marginBottom: '4vh'
+    }
 })
 
 
@@ -100,6 +139,20 @@ function getSorting(order, orderBy) {
     return order === 'desc' ? (a,b) => desc(a,b,orderBy) : (a,b) => -desc(a,b,orderBy);
 }
 
+// Edited. ORIGINAL FROM: https://medium.com/@DylanAttal/truncate-a-string-in-javascript-41f33171d5a8
+function truncateString(str) {
+    // If the length of str is less than or equal to num
+    // just return str--don't truncate it.
+    console.log(str)
+    if (str.length <= 50) {
+      return str
+    }
+    // Return str truncated with '...' concatenated to the end of str.
+    var temp = str.slice(0, 100);
+    var ind = temp.lastIndexOf(' ');
+    return temp.substring(0, ind) + '...';
+  }
+
 export default withStyles(styles)(class MyDocumentsPage extends React.Component {
 
     state = {
@@ -109,7 +162,11 @@ export default withStyles(styles)(class MyDocumentsPage extends React.Component 
         docs: []
     }
 
-    getDocuments = async() => {
+    getDocuments = async(display) => {
+        // only shows display if first time reaching page
+        if (display)
+            this.setState({...this.state, isFetching: true});
+
         console.log(this.state.search)
         await axios.get(
             '/api/getUserDocuments',
@@ -141,17 +198,17 @@ export default withStyles(styles)(class MyDocumentsPage extends React.Component 
             }
             //console.log(doc_list)
 
-            this.setState({docs: doc_list});
+            this.setState({docs: doc_list, isFetching: false});
         })
     } 
 
     componentDidMount() {
-        this.getDocuments();
+        this.getDocuments(true);
     }
 
     handleSearchChange = (e) => {
         console.log('B')
-        this.setState({search: e.target.value}, () => this.getDocuments());
+        this.setState({search: e.target.value}, () => this.getDocuments(false));
     }
 
     handleRequestSort = property => event => {
@@ -192,9 +249,9 @@ export default withStyles(styles)(class MyDocumentsPage extends React.Component 
                         </Paper>
                     </Grid>
                     <Paper className={classes.table}>
-                        <Grid container direction="row" spacing="1" item justify="flex-end" alignItems="flex-end">
+                        <Grid container direction="row" spacing="1" item justify="flex-end" alignItems="flex-end" className={classes.searchAndIconGrid}>
                             <Grid item><FindInPageIcon className={classes.documentIcon}/></Grid>
-                            <Grid item><TextField InputLabelProps={{classes: {root: classes.searchFieldLabel}}} InputProps={{classes: {input: classes.searchField, underline: classes.searchUnderline}}} className={classes.searchField} label="Search for documents..." onKeyUp={this.handleSearchChange} /></Grid>
+                            <Grid item className={classes.searchGrid}><TextField InputLabelProps={{classes: {root: classes.searchFieldLabel}}} InputProps={{classes: {input: classes.searchField, underline: classes.searchUnderline}}} className={classes.searchField} label="Search for documents..." onKeyUp={this.handleSearchChange} /></Grid>
                         </Grid>
                         <Table>
                             <TableHead>
@@ -203,6 +260,7 @@ export default withStyles(styles)(class MyDocumentsPage extends React.Component 
                                         return (
                                             <TableCell
                                                 key={label.id}
+                                                className={classes.labelCell}
                                                 numeric={label.numeric}
                                                 padding={'none'}
                                                 sortDirection={this.state.orderBy === label.id ? this.state.order : false}
@@ -215,6 +273,7 @@ export default withStyles(styles)(class MyDocumentsPage extends React.Component 
                                                         active={this.state.orderBy === label.id && !(label.id === 'link')}
                                                         direction={this.state.order}
                                                         onClick={this.handleRequestSort(label.id)}
+                                                        classes={{icon: classes.sortTooltip}}
                                                     >
                                                         <Typography style={{color: '#3D8AC8'}} variant="h6">{label.label}</Typography>
                                                     </TableSortLabel>
@@ -233,19 +292,22 @@ export default withStyles(styles)(class MyDocumentsPage extends React.Component 
                                                 onClick={event => this.isSelected(n._id)}
                                                 tabIndex={-1}
                                                 key={n._id}
-                                                /*component={Link} to={ TODO}*/
-
+                                                className={classes.tableRow}
                                             >
-                                                <TableCell align="center">{n.title}</TableCell>
-                                                <TableCell align="center">{n.subtitle}</TableCell>
-                                                <TableCell align="center">{n.author}</TableCell>
-                                                <TableCell align="center">{n.link}</TableCell>
+                                                <TableCell align="center" className={classes.titleCell} component={Link} to={{pathname: "/doc", state: {articleId: n._id}}} >{"\"" + n.title + "\""}</TableCell>
+                                                <TableCell align="center" className={classes.subtitleCell} component={Link} to={{pathname: "/doc", state: {articleId: n._id}}} >{"\"" + truncateString(n.subtitle) + "\""}</TableCell>
+                                                <TableCell align="center" className={classes.authorCell} component={Link} to={{pathname: "/doc", state: {articleId: n._id}}}>{n.author ? n.author : "Not available."}</TableCell>
+                                                <TableCell align="center" className={classes.urlCell}><a href={n.link} target="_blank">Visit on the original site!</a></TableCell>
                                             </TableRow>
                                         )
                                     })
-                                }
+                                } 
                             </TableBody>
                         </Table>
+                        <Grid container direction="row" spacing="1" item justify="center" alignItems="center">
+                            <Grid item><Typography className={classes.loadingText} variant="h4">{this.state.isFetching ? 'Fetching documents...' : ''}</Typography></Grid>
+                        </Grid>
+                        
                     </Paper>
 
                     <Grid item>

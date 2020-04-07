@@ -50,7 +50,7 @@ const styles = theme => ({
         borderColor: '#9CBDD2',
         backgroundColor: "#f5f5f5",
         fontSize: '1em',
-        marginBottom: '15vh',
+        marginBottom: '3vh',
         marginTop: '5vh',
         textAlign: 'center'
     },
@@ -92,7 +92,7 @@ const styles = theme => ({
         height: 'auto'
     },
     questionPaper: {
-        marginTop: '25vh',
+        marginTop: '22vh',
         color: '#2268B2',
         fontFamily: 'Karla, sans-serif',
         //paddingTop: '0.5vh',
@@ -143,6 +143,17 @@ const styles = theme => ({
     },
     badgeImage: {
         height: '13vh'
+    },
+    loadingPaper: {
+        height: '10vh',
+        width: '25vw',
+        textAlign: 'center'
+    },
+    loadingText: {
+        color: '#2268B2',
+        marginTop: '4vh',
+        marginBottom: '4vh',
+        paddingTop: '3vh'
     }
 })
 
@@ -160,6 +171,7 @@ export default withStyles(styles)(class AchievementsPage extends React.Component
 
     componentDidMount() {
         // retrieves the user's achievements
+        this.setState({...this.state, isFetching: true});
         axios.get(
             '/api/getUserAchievements',
             {
@@ -210,7 +222,7 @@ export default withStyles(styles)(class AchievementsPage extends React.Component
                 console.log(conv_user_ach)
 
                 // updates the two lists in state
-                this.setState({user_achievements: conv_user_ach, rem_achievements: conv_rem_ach});
+                this.setState({user_achievements: conv_user_ach, rem_achievements: conv_rem_ach, isFetching: false});
             })
         })
     }
@@ -238,7 +250,9 @@ export default withStyles(styles)(class AchievementsPage extends React.Component
                         <Typography style={{paddingTop: '4.5vh'}} variant="h3">Achievements</Typography>
                     </Paper>
                 </Grid>
-
+                {this.state.isFetching ? <Grid container direction="row" spacing="1" item justify="center" alignItems="center">
+                    <Grid item><Paper className={classes.loadingPaper}><Typography className={classes.loadingText} variant="h4">{'Fetching achievements...'}</Typography></Paper></Grid>
+                </Grid> : <div></div>}
                 <Grid item>
                     <Table>
                         <TableBody>

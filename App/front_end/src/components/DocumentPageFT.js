@@ -75,6 +75,7 @@ const styles = theme => ({
         backgroundColor: '#7AB4D8',
         height: 'auto'
     },
+
     loadingPaper: {
         height: '10vh',
         width: '25vw',
@@ -93,7 +94,7 @@ const styles = theme => ({
 
 
 
-export default withStyles(styles)(class DocumentPage extends React.Component {
+export default withStyles(styles)(class DocumentPageFT extends React.Component {
 
     beginner_topics = ['Numeros', 'Ser vs. Estar', 'Pretérito'];
     intermediate_topics = ['Uma coisa', 'Outra coisa', 'Uma terceira coisa', 'Uma final coisa'];
@@ -161,6 +162,7 @@ export default withStyles(styles)(class DocumentPage extends React.Component {
                     alignItems="center"
                     justify="center"
                 >
+                
                     {this.state.isFetching ? <Grid container direction="row" spacing="1" item justify="center" alignItems="center">
                         <Grid item><Paper className={classes.loadingPaper}><Typography className={classes.loadingText} variant="h4">{'Fetching achievements...'}</Typography></Paper></Grid>
                     </Grid> : <div>
@@ -198,8 +200,8 @@ export default withStyles(styles)(class DocumentPage extends React.Component {
 
                     <Grid item>
                         <Grid container spacing={4}>
-                        <Grid item><Button component={Link} to="/mydocs" classes={{root: classes.loginButton, disabled: classes.loginButtonDisabled}} variant="contained">
-                            <Typography variant="button">Back to My Documents</Typography></Button></Grid>
+                        <Grid item><Button component={Link} to="/dash" classes={{root: classes.loginButton, disabled: classes.loginButtonDisabled}} onClick={this.updateUser} variant="contained">
+                            <Typography variant="button">Back to Learning Center</Typography></Button></Grid>
                         </Grid>
                         
                     </Grid>
