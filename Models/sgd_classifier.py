@@ -79,6 +79,8 @@ def train(data):
 	# partitions data into training and test sets
 	X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2)
 
+	print(X_train)
+
 	# partitions the training set into a general set (for use in the model) and a tuning set (for use in refining other components)
 	X_general, X_tuning, y_general, y_tuning = train_test_split(X_train, y_train, test_size=0.3)
 

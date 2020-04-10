@@ -18,17 +18,27 @@ def train(data):
 	target_wiki = test_data.loc[:, test_data.columns == 'wiki']
 	target_brescola = test_data.loc[:, test_data.columns == 'brescola']
 
+	# TOWRITE
 	# ensures the lengths of the target data line up
+	# changed to remove BrEscola from running -> refer to Filho
+	# documents tailored to kids and teens -> want a wider sweep
+	# Explanation:
+	# Removed BrEscola because it uses documents originally just tailored for kids and teens
+	# Don't want to rely on just PSFL (despite it performing best) since it used documents just for kids and just for adults
+	# Highest accuracy but likely because its classifications are too stark -> we also don't want that to be the threshold
+	# Our "simple" and "difficult" should be from the perspective of the "average" learner!
+	# Decide to go with majority of the 3 -> fair accuracy
+	# SHOW BOTH THIS ONE'S STATS AND THE PSFL ONLY
 	length = len(target_brescola)
 	if length != len(target_zh) or length != len(target_wiki) or length != len(target_psfl):
 		print("ERROR: Lengths of four targets are not all the same.")
 
-	## aggregates the results into one column
+	# aggregates the results into one column
 	difficulties = []
 
 	# for each observation...
 	for i in range(length):
-		results = [target_psfl.values[i], target_zh.values[i], target_wiki.values[i], target_brescola.values[i]]
+		results = [target_psfl.values[i], target_zh.values[i], target_wiki.values[i]]
 
 		# takes the maximum occurrence, defaulting towards "difficult" in case of tie
 		s = 0
@@ -46,7 +56,7 @@ def train(data):
 		# doing the opposite brings up accuracy and f1 but heavily leans in favor of predicting for 's'
 		# just using psfl brings up both scores -> DISCUSS THIS -> why might this be? maybe those docs are all from psfl???
 
-		# TODO - Plot the differences here!
+		# takes the simple majority and appends to list
 		if d >= s:
 			difficulties.append('d')
 		else:
@@ -59,9 +69,11 @@ def train(data):
 	data = data.drop("brescola", axis=1)
 	data = data.drop("docid", axis=1)
 
-	# sets the target data according to user input
-	print('Please select the corpora to use as ground truth: 0 - PSFL, 1 - ZH, 2 - Wiki, 3 - BrEscola, 4 - Weighted Average')
-	temp = float(input())
+	# sets the target data according to user input - option 4 selected by default
+	print('Please select the corpora to use as ground truth: 0 - PSFL, 1 - ZH, 2 - Wiki, 3 - BrEscola, 4 - Majority of non-BrE')
+	print('Option 4 selected automatically. This setting can be changed in the individual model script.')
+	#temp = float(input())
+	temp = 4
 
 	if (temp == 0):
 		target = target_psfl.values.reshape(-1,).tolist()
@@ -70,9 +82,16 @@ def train(data):
 	elif (temp == 2):
 		target = target_wiki.values.reshape(-1,).tolist()
 	elif (temp == 3):
-		target = target_brescola.values.reshape(-1,).tolist()
+		print('BrEscola classifier not implemented. See code.')
+		return
 	elif (temp == 4):
 		target = difficulties
+	
+	# TOWRITE - Note that they're fairly balanced and so not differentiating metrics by label should be fine
+	print('\n')
+	print('Number of difficult docs:' + str(target.count('d')))
+	print('Number of simpler docs:' + str(target.count('s')))
+	print('\n')
 
 	# partitions data into training and test sets
 	X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2)
@@ -84,10 +103,13 @@ def train(data):
 
 	## performs feature selection using other scikit libraries
 
-	# TODO - Average all metrics out over many rounds for better selection
-	# TODO - Select only a couple of metrics
 	print('FEATURE SELECTION METRICS (DECISION TREE):')
-	for j in range(20, 80, 5):
+	accs = []
+	precs = []
+	recs = []
+	fones = []
+	rng = range(20, 80, 5)
+	for j in rng:
 		index = X_tuning.index.tolist()
 		cols = X_tuning.columns.tolist()
 
@@ -97,10 +119,10 @@ def train(data):
 
 		temp = selector.get_support(True)
 
-		X_tuning = pd.DataFrame(data=X_tuning, index=index, columns=[cols[i] for i in temp])
+		X_temp = pd.DataFrame(data=X_tuning, index=index, columns=[cols[i] for i in temp])
 
 		# splits tuning set into training and testing data
-		X_train_iter, X_test_iter, y_train_iter, y_test_iter = train_test_split(X_tuning, y_tuning, test_size=0.2)
+		X_train_iter, X_test_iter, y_train_iter, y_test_iter = train_test_split(X_temp, y_tuning, test_size=0.2)
 
 		# fits a basic decision tree model on the data
 		dec_tree = tree.DecisionTreeClassifier()
@@ -112,30 +134,36 @@ def train(data):
 
 		# NOTE - Order in lists is 'd','s'
 		accuracy = accuracy_score(y_true, y_pred)
-		precisions_by_label = [precision_score(y_true, y_pred, average='binary', pos_label='d'), precision_score(y_true, y_pred, average='binary', pos_label='s')]
-		precision_global = precision_score(y_true, y_pred, average='micro')
-		recalls_by_label = recall_score(y_true, y_pred, average=None)
-		recall_global = recall_score(y_true, y_pred, average='micro')
-		f1s_by_label = f1_score(y_true, y_pred, average=None) 
-		f1_global = f1_score(y_true, y_pred, average='micro') 
+		precision_global = precision_score(y_true, y_pred, average='binary', pos_label='d')
+		recall_global = recall_score(y_true, y_pred, average='binary', pos_label='d')
+		f1_global = f1_score(y_true, y_pred, average='binary', pos_label='d') 
 
-		print(j / 100, 'acc:', round(accuracy, 2), 'precisions_by_label', [round(x, 2) for x in precisions_by_label], 'precision_global', round(precision_global, 2), 'recalls_by_label', [round(x, 2) for x in recalls_by_label], 'recall_global', round(recall_global, 2), 'f1s_by_label', [round(x, 2) for x in f1s_by_label], 'f1_global', round(f1_global, 2))
+		print(j / 100, 'acc:', round(accuracy, 2),'precision_global', round(precision_global, 2),  'recall_global', round(recall_global, 2), 'f1_global', round(f1_global, 2))
+		accs.append(accuracy)
+		precs.append(precision_global)
+		recs.append(recall_global)
+		fones.append(f1_global)
 
 		X_tuning=X_tuning_copy
 
-	# TODO - Plots for all of the metrics chosen - do it for just one model to give reader idea of the range in performance depending on selected features + how we visualized it
-	#ax = plt.gca()
-	#ax.plot(percs, [x[1] for x in nrmses])
-	#plt.xlabel('percentage of features included')
-	#plt.ylabel('NRMSE')
-	#plt.title('NMRSE change over feature inclusion thresholds')
-	#plt.axis('tight')
-	#plt.show(block=False)
-	#plt.savefig('linear_feature_threshold_nrmses.png')
-	#plt.clf()
+	# TOWRITE - For metrics, 'd' considered positive class
+	ax = plt.gca()
+	ax.plot(rng, accs, label="Accuracies")
+	ax.plot(rng, precs, label="Precisions")
+	ax.plot(rng, recs, label="Recalls")
+	ax.plot(rng, fones, label="F-measures")
+	plt.xlabel('Percentage of features used')
+	plt.ylabel('Magnitude of measure')
+	plt.title("Magnitude of eval. metrics by % of features used.")
+	plt.axis('tight')
+	plt.legend()
+	plt.show(block=True)
+	plt.savefig('decision_tree_metrics_by_prop_features.png')
+	plt.clf()
 
 	print('Please input a reasonable decimal threshold for feature selection:')
 	thresh = float(input())
+	#thresh = 0.6
 	
 	# uses the percent threshold to perform feature selection, applying it to training and test sets
 	index_test = X_test.index.tolist()
@@ -159,33 +187,14 @@ def train(data):
 	y_true = y_test
 
 	accuracy = accuracy_score(y_true, y_pred)
-	precisions_by_label = [precision_score(y_true, y_pred, average='binary', pos_label='d'), precision_score(y_true, y_pred, average='binary', pos_label='s')]
-	precision_global = precision_score(y_true, y_pred, average='micro')
-	recalls_by_label = recall_score(y_true, y_pred, average=None)
-	recall_global = recall_score(y_true, y_pred, average='micro')
-	f1s_by_label = f1_score(y_true, y_pred, average=None) 
-	f1_global = f1_score(y_true, y_pred, average='micro') 
+	precision_global = precision_score(y_true, y_pred, average='binary', pos_label='d')
+	recall_global = recall_score(y_true, y_pred, average='binary', pos_label='d')
+	f1_global = f1_score(y_true, y_pred, average='binary', pos_label='d') 
 
-	# TODO - Print metrics more intelligently
-	print('DECISION TREE:', 'acc:', round(accuracy, 2), 'precisions_by_label', [round(x, 2) for x in precisions_by_label], 'precision_global', round(precision_global, 2), 'recalls_by_label', [round(x, 2) for x in recalls_by_label], 'recall_global', round(recall_global, 2), 'f1s_by_label', [round(x, 2) for x in f1s_by_label], 'f1_global', round(f1_global, 2))
-
-	# TODO - Plot all evaluation metrics!
-	# visualizes the residuals
-	#plt.xlabel('Predicted Value')
-	#plt.ylabel('Residual')
-	#plt.title('Residuals (Linear Regression)')
-	#plt.axis('tight')
-	#plt.savefig('linear_residuals.png')
-	#plt.show()
-	#plt.clf()
+	print('Final:', 'acc:', round(accuracy, 2),'precision_global', round(precision_global, 2),  'recall_global', round(recall_global, 2), 'f1_global', round(f1_global, 2))
 
 	# saves the model to a file
 	filename = 'decision_tree.sav'
 	pickle.dump(fitted, open(filename, 'wb'))
 
-	# prints the mean accuracy
-	#loaded_model = pickle.load(open(filename, 'rb'))
-	#result = loaded_model.score(X_test, y_test)
-	#print('Mean Accuracy: ', result)
-
-	return fitted
+	return [accuracy, precision_global, recall_global, f1_global]

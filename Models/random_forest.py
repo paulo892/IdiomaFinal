@@ -80,8 +80,11 @@ def train(data):
 	# partitions data into training and test sets
 	X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2)
 
+	
+
 	# partitions the training set into a general set (for use in the model) and a tuning set (for use in refining other components)
 	X_general, X_tuning, y_general, y_tuning = train_test_split(X_train, y_train, test_size=0.3)
+
 
 	X_tuning_copy = X_tuning.copy()
 
@@ -150,7 +153,8 @@ def train(data):
 	#plt.clf()
 
 	print('Please input a reasonable decimal threshold for feature selection:')
-	thresh = float(input())
+	#thresh = float(input())
+	thresh = 1
 	
 	# uses the percent threshold to perform feature selection, applying it to training and test sets
 	index_test = X_test.index.tolist()
@@ -168,6 +172,8 @@ def train(data):
 	# fits a decision tree model to the testing data
 	forest = RandomForestClassifier(n_estimators=op_estims, criterion=op_crit, max_depth=op_depth)
 	fitted = forest.fit(X_general, y_general)
+
+	print(fitted.n_features_)
 
 	# prints evaluation metrics
 	y_pred = fitted.predict(X_test).tolist()
@@ -195,8 +201,8 @@ def train(data):
 	#plt.clf()
 
 	# saves the model to a file
-	filename = 'forest.sav'
-	pickle.dump(fitted, open(filename, 'wb'))
+	#filename = 'forest.sav'
+	#pickle.dump(fitted, open(filename, 'wb'))
 
 	# prints the mean accuracy
 	#loaded_model = pickle.load(open(filename, 'rb'))
