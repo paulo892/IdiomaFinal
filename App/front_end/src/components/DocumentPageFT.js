@@ -1,29 +1,14 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import { Grid } from '@material-ui/core';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
-import InputAdornment from "@material-ui/core/InputAdornment";
-import People from "@material-ui/icons/People";
-import Icon from "@material-ui/core/Icon";
-import LockIcon from '@material-ui/icons/Lock';
 import {Link} from "react-router-dom";
-
-import Checkbox from '@material-ui/core/Checkbox';
 import axios from 'axios';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
 import Typography from '@material-ui/core/Typography';
-
 import logo from "../images/logo.png";
 
-
+// component styles
 const styles = theme => ({
     root: {
         backgroundImage: logo,
@@ -75,7 +60,6 @@ const styles = theme => ({
         backgroundColor: '#7AB4D8',
         height: 'auto'
     },
-
     loadingPaper: {
         height: '10vh',
         width: '25vw',
@@ -90,23 +74,19 @@ const styles = theme => ({
     }
 })
 
-
-
-
-
+// component to display a given document at its first access
 export default withStyles(styles)(class DocumentPageFT extends React.Component {
 
+    // topics for each proficiency level
     beginner_topics = ['Numeros', 'Ser vs. Estar', 'Pretérito'];
     intermediate_topics = ['Uma coisa', 'Outra coisa', 'Uma terceira coisa', 'Uma final coisa'];
     advanced_topics = ['COS', 'POR'];
 
-    
-
     state = {
-        attributes: [],
-        article: null
+        article: null // article data to be displayed
     }
 
+    // after mount, retrieves the document data
     componentDidMount() {
         this.setState({...this.state, isFetching: true});
         axios.get(
@@ -115,29 +95,24 @@ export default withStyles(styles)(class DocumentPageFT extends React.Component {
                 params: {
                     articleId: this.props.articleId
                 }
-                
             },
             {
                 headers: {'Content-type': 'application/json'}
             }
         ).then((data) => {
             const result = data['data'];
-            console.log(result);
             this.setState({article: result, isFetching: false});
-            
         })
     }
 
+    // updates the user object in the DB
     updateUser = async() => {
-        console.log('sifsjf');
-        console.log(this.state.article['_id']);
         await axios.post(
             '/api/updateUser',
             {
                 articleViewed: this.state.article['_id'],
                 articleFeatures: this.state.article['features'],
                 email: this.props.email
-                
             },
             {
                 headers: {'Content-type': 'application/json'}
@@ -145,10 +120,7 @@ export default withStyles(styles)(class DocumentPageFT extends React.Component {
         ).then((data) => {
             console.log('Done');
         })
-        
     }
-
-    
 
     render() {
     
@@ -196,14 +168,14 @@ export default withStyles(styles)(class DocumentPageFT extends React.Component {
                                 {this.state.article && this.state.article['text']}
                             </Typography>    
                         </div>
-                    </Paper></div>}
+                    </Paper></div>
+                    }
 
                     <Grid item>
                         <Grid container spacing={4}>
                         <Grid item><Button component={Link} to="/dash" classes={{root: classes.loginButton, disabled: classes.loginButtonDisabled}} onClick={this.updateUser} variant="contained">
                             <Typography variant="button">Back to Learning Center</Typography></Button></Grid>
                         </Grid>
-                        
                     </Grid>
                 </Grid>
             </div>
@@ -211,4 +183,3 @@ export default withStyles(styles)(class DocumentPageFT extends React.Component {
     }
 })
 
-//<Grid item><Button component={Link} to={{pathname: "/doc", state: {articleId: this.state.articleId}}} classes={{root: classes.loginButton, disabled: classes.loginButtonDisabled}} variant="contained" disabled={!this.state.articlePrepared}>Continue</Button></Grid>

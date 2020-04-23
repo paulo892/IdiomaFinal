@@ -1,11 +1,10 @@
-Server:
-- To update, run pipenv shell and then pipenv install the package within the shell (or outside of it, can't recall)
-- To run, do pipenv shell, and then python mongo_conect.py
+# Installation Instructions:
+ - To update, add dependency to package.json and npm install
 
-front_end:
-- To update, add dependency to package.json and npm install
-- To run, yarn start
+# Running instructions:
+ - Run "yarn start" to open front-end on localhost:3000
 
-test_app_user:
-paulofrazao2008@hotmail.com
-password
+# Notes:
+ - App user credentials for testing:
+ 	- Username: paulofrazao2008@hotmail.com
+ 	- Password: password

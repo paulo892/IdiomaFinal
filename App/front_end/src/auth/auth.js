@@ -2,6 +2,7 @@ import auth0 from 'auth0-js';
 
 import history from './history';
 
+// helper class for Auth0 based on files on Auth0 website
 export default class Auth {
   // Please use your own credentials here
   auth0 = new auth0.WebAuth({
@@ -13,7 +14,6 @@ export default class Auth {
   });
 
   login = () => {
-    console.log('here')
     this.auth0.authorize();
   }
 
@@ -22,11 +22,9 @@ export default class Auth {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
-        console.log('yo');
         history.replace('/home');
       } else if (err) {
         history.replace('/');
-        console.log(err);
       }
     });
   }
@@ -39,9 +37,7 @@ export default class Auth {
     localStorage.setItem('id_token', authResult.idToken);
     localStorage.setItem('expires_at', expiresAt);
     // navigate to the home route
-    //history.replace('/home');
     history.push('/home');
-    console.log('iwefifri');
     
   }
 
@@ -53,7 +49,6 @@ export default class Auth {
     localStorage.removeItem('expires_at');
     // navigate to the home route
     history.push('/');
-    //this.auth0.logout({returnTo: 'http://localhost:3000/'});
     
   }
 

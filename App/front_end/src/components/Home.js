@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import App from '../App';
 import LoginPage from './LoginPage';
 import Dashboard from './Dashboard';
 
+// component to encapsulate Auth0 logic and determine what page to show the user
 class Home extends Component {
-  // calls the login method in authentication service
+
+  // selects the displayed page based on user authentication
   render() {
-    // calls the isAuthenticated method in authentication service
     const { isAuthenticated } = this.props.auth;
     return (
       <div>

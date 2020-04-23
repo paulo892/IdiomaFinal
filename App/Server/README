@@ -1,1 +1,7 @@
-run 'python -m spacy download pt_core_news_sm' to download spacy dependencies!
+# Installation Instructions:
+ - Run "pip install pipenv" if "pipenv" not installed
+ - Run "python -m spacy download pt_core_news_sm" to download spacy dependencies
+
+# Running Instructions: 
+ - Enter virtual environment by running "pipenv shell"
+ - Run "python mongo_connect.py" to launch server on localhost:5000

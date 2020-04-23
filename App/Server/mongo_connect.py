@@ -18,17 +18,19 @@ from toposort import toposort, toposort_flatten
 import random
 import ast
 
-
+# performs integrations with MongoDB Atlas DB
 mongo = pymongo.MongoClient('mongodb+srv://paulo892:hello@cluster0-farth.mongodb.net/test?retryWrites=true&w=majority', maxPoolSize=50, connect=False)
 db = pymongo.database.Database(mongo, 'idioma')
 users = pymongo.collection.Collection(db, 'users')
 achievements = pymongo.collection.Collection(db, 'achievements')
 documents = pymongo.collection.Collection(db, 'final_featurized_diario_noticias_50iter')
 
+# necessary Flask configurations
 app = Flask(__name__, static_folder='../build/static', template_folder='../build/')
 app.config.from_object(__name__)
 CORS(app)
 
+# dictionary of direct dependencies for use in top. sort
 top_dict = {
     1:{0},
     2:{0},
@@ -54,7 +56,7 @@ top_dict = {
     22:{0}
 }
 
-# TODO - function that automatically creates this unrolled dependency tree 
+# dictionary of unrolled dependencies for use in matching alg.
 dep_tree = {
     0:None,
     1:{0},
@@ -81,6 +83,7 @@ dep_tree = {
     22:{0}
 }
 
+# mapping of indices to grammatical topics
 indices_to_topics = {
     0:"Presente Indicativo (Regular)",
     1:"Presente Indicativo (Irregular)",
@@ -94,7 +97,7 @@ indices_to_topics = {
     9:"Presente Gerúndio",
     10:"Presente Perfeito",
     11:"Presente Subjuntivo (Regular)",
-    12:"Presente Indicativo (Irregular)",
+    12:"Presente Subjuntivo (Irregular)",
     13:"Pretérito Perfeito",
     14:"Futúro Indicativo (Regular)",
     15:"Futúro Indicativo (Irregular)",
@@ -107,6 +110,7 @@ indices_to_topics = {
     22:"Números"
 }
 
+# mapping of grammatical topics to indices
 topics_to_indices = {
     "Presente Indicativo (Regular)":0,
     "Presente Indicativo (Irregular)":1,
@@ -133,22 +137,20 @@ topics_to_indices = {
     "Números":22
 }
 
+# total number of features in script
 NUMBER_OF_FEATURES = len(indices_to_topics)
 
+# thresholds for determining user familiarity with features
+THRESHOLDS = [0, 10, 50, 100]
+
+# helper class for writing to JSON
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, ObjectId):
             return str(o)
         return json.JSONEncoder.default(self, o)
 
-
-class MyJSONEncoder(JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, ObjectId):
-            return str(obj)
-        return super(MyJSONEncoder, self).default(obj)
-
-
+# retrieves the features a user has seen by their email
 @app.route('/api/getUserExperience', methods=['GET'])
 def get_user_experience():
 
@@ -169,15 +171,15 @@ def get_user_experience():
 
     return jsonify(usr_exp)
 
+# retrieves an appropriate article by user input and preferences
 @app.route('/api/getArticleId', methods=['GET','POST'])
 def get_article_by_input_and_prefs():
 
     # takes in user input and user email from request
     attributes = request.args.getlist('attributes[]')
-    print('sifuhsief', attributes)
     email = request.args['email']
 
-    # determines what level user is at -> simple or difficult
+    # determines the user level -> simple or difficult
     userquery = {"email": email}
     cursor1 = users.find(userquery)
 
@@ -192,8 +194,6 @@ def get_article_by_input_and_prefs():
     levelquery = {"diff": usr_level}
     cursor2 = documents.find(levelquery)
 
-    print('Count1:', cursor2.count())
-
     documents_right_level = []
     for doc in cursor2:
         documents_right_level.append(doc)
@@ -205,39 +205,50 @@ def get_article_by_input_and_prefs():
         if doc['_id'] not in usr_docs_seen:
             documents_unseen.append(doc)
 
-    print('Count2:', len(documents_unseen))
-
     ## performs matching algorithm to narrow down documents further
 
     # calculates topological sort over nodes
-    # TOTUNE - maybe move this out of thsi function call
     top_sort = utilities.top_sort_topics(top_dict)
 
-    # TODO - ensure that this array is always of the length of the number of features in consideration in mongo
     usr_feats_seen = usr['features_seen']
 
     feature_relevance={}
 
-    # for each topic node...
+    # for each grammatical topic...
     for topic in top_sort:
-        #print('Topic:', indices_to_topics[topic])
-        #print('Number of times seen(roughly):', usr_feats_seen[topic])
+        # retrieves its dependencies
         deps = dep_tree[topic]
         prev_seen = []
 
-        # always marks "Presente Indicativo (Regular)" as relevant
+        # calculates its relevance
+        # (-1, 0, 1) -> (irrelevant, neutral, relevant)
+        
+        # always marks "Present Indicative" as relevant
         if deps is None:
             feature_relevance[topic] = 1
 
+        # if the user requested the topic, marks it as relevant
         elif indices_to_topics[topic] in attributes:
             feature_relevance[topic] = 1
-            print(indices_to_topics[topic])
 
         # for all other topics...
         else:
-            # gets list of degree of familiarity with topics on which dependent
+            # creates list of user's familiarity with topics on which this topic is dependent
             for dep in deps:
-                prev_seen.append(usr_feats_seen[dep])
+                occ = usr_feats_seen[dep]
+                if occ < 0:
+                    print('ERROR: User cannot have seen feature less than 0 times.')
+                # if user has seen feature b/w 0 and 10 times, unfamiliar -> 0
+                elif occ < 10:
+                    lvl = 0
+                # if user has seen feature b/w 10 and 50 times, familiar -> 1
+                elif occ < 50:
+                    lvl = 1
+                # if user has seen feature over 50 times, very familiar -> 2
+                else:
+                    lvl = 2
+
+                prev_seen.append(lvl)
 
             # calculates proportions of 0s, 1s, and 2s in previous topic familiarities
             prev_len = len(prev_seen)
@@ -248,35 +259,32 @@ def get_article_by_input_and_prefs():
             one_prop = one_count / prev_len
             two_prop = two_count / prev_len
 
-            # TOTUNE - relevance algorithm
-            # if user has seen every previous topic...
+            ## calculates the relevance of the topic
+
+            # if user has seen every topic on which this topic depends...
             if 0 not in prev_seen:
-                # and seen this topic many (10+) times, neutral relevance
+                # and seen this topic many times -> neutral
                 if usr_feats_seen[topic] == 2:
-                    #print(1)
                     feature_relevance[topic] = 0
-                # and not seen this topic many times, relevant
+                # and not seen this topic many times -> relevant
                 else:
                     feature_relevance[topic] = 1
                     #print(2)
 
-            # if user has not seen any of the previous topics, irrelevant
+            # if user has not seen any topics on which this topic depends -> irrelevant
             elif 1 not in prev_seen and 2 not in prev_seen:
                 feature_relevance[topic] = -1
-                #print(3)
 
-            # if user has seen > 2/3 of previous topics and has not seen many of this one, relevant
+            # if user has seen > 2/3 of topics on which this topic depends 
+            # and has not seen many of this one -> relevant
             elif (one_prop + two_prop > 2/3) and (usr_feats_seen[topic] != 2):
                 feature_relevance[topic] = 1
-                #print(4)
 
-            # else, neutral
+            # else -> neutral
             else:
                 feature_relevance[topic] = -1
-                #print(5)
-        #print('Result', feature_relevance[topic])
 
-    # sample 100 documents
+    # samples 100 documents from the pool of documents not yet read
     sample_size = 100 if len(documents_unseen) >= 100 else len(documents_unseen)
     sampled_docs = random.sample(documents_unseen, sample_size)
 
@@ -284,33 +292,39 @@ def get_article_by_input_and_prefs():
 
     # for each sampled doc...
     for doc in sampled_docs:
-        # for each feature, nurmalizes its prevalence in text, multiplies it by relevance, and adds them together
-        # divides sum by number of feature
-        # range: [-1,1]
-        feature_prev = doc['features']
-        feature_prev_normalized = [0 if x==0 else 0.5 if x==1 else 1 for x in feature_prev]
 
+        # retrieves the number of appearances of all topics in text
+        feature_prev = doc['features']
+
+        # normalizes the appearance count, according to system similar to one above
+        feature_prev_normalized = [0 if x < THRESHOLDS[1] else 0.5 if x < THRESHOLDS[2] else 1 for x in feature_prev]
+
+        # collates the relevances of each topic
         relevance_list = []
         for key in sorted(feature_relevance.keys()):
             relevance_list.append(feature_relevance[key])
 
+        # multiplies the relevance and the prevalence (within the text) of each topic together
         temp = [a*b for a,b in zip(feature_prev_normalized, relevance_list)]
+        # adds the above products together, and divides by the number of topics
         app = np.sum(temp) / NUMBER_OF_FEATURES
 
-        # TOTUNE - appropriateness threshold
+        ## this process produces a number in the range [-1,1]
+
+        # labels each document with an 'appropriateness threshold' of > 0.2 as appropriate
+        # and adds that document to a list
         if app >= 0.2:
             app_docs[doc['_id']] = app
 
-        #app_docs[doc['_id']] = app
-
-    print('Count3:', len(app_docs))
-
-    # change away from random after changes to user object implemented
+    # randomly selects a document from those deemed appropriate
     best_doc = random.choice(list(app_docs.keys()))
-    #best_doc = max(app_docs, key=app_docs.get)
+    
+    # alternative approach -> max appropriateness
+    # best_doc = max(app_docs, key=app_docs.get)
 
     return str(best_doc)
 
+# retrieves an article by its ID
 @app.route('/api/getArticleData', methods=['GET','POST'])
 def get_article_data():
     # takes in article ID from request
@@ -324,12 +338,12 @@ def get_article_data():
     encoded_doc = JSONEncoder().encode(doc)
     return encoded_doc
 
+# retrieves the document objects for documents seen by users
 @app.route('/api/getUserDocuments', methods=['GET', 'POST'])
 def get_user_documents():
     # takes in user email and search term from request
     email = request.args['email']
     search = request.args['search']
-    print('.*' + search + '.*')
 
     # returns the user information
     userquery = {"email": email}
@@ -342,30 +356,26 @@ def get_user_documents():
 
     # extracts the documents seen by user
     docs_seen = usr['documents_seen']
-    
 
     docs = {}
+
+    # for each document already seen...
     for doc in docs_seen:
         # creates and runs query to find its data
         docquery = {"_id": ObjectId(doc), 'title': {'$regex': '.*' + search + '.*'}}
-        print(ObjectId(doc))
         cursor = documents.find(docquery)
 
         # gets the document data and appends to list
-        if cursor.count() == 0:
-            print('oops')
-            continue
         document = cursor[0]
         docs[str(document['_id'])] = JSONEncoder().encode(document)
     
     return jsonify(docs)
 
+# retrieves the achievements unlocked by the user
 @app.route('/api/getUserAchievements', methods=['GET','POST'])
 def get_user_achievements():
     # takes in user email from request
-    print(request.args)
     email = request.args['email']
-    
 
     # returns the user information
     userquery = {"email": email}
@@ -373,7 +383,6 @@ def get_user_achievements():
 
     if (cursor.count() > 1):
         print('ERROR: More than one user with same email.')
-    print('HELLO')
 
     usr = cursor[0]
 
@@ -390,14 +399,10 @@ def get_user_achievements():
         # gets the achievement data and appends to list
         achievement = cursor[0]
         achs[str(achievement['_id'])] = JSONEncoder().encode(achievement)
-        print('hello')
-        print(achs[str(achievement['_id'])])
-    print('here')
-    print(achs)
 
     return jsonify(achs)
 
-
+# retrieves all possible achievements
 @app.route('/api/getAllAchievements', methods=['GET','POST'])
 def get_all_achievements():
 
@@ -408,18 +413,15 @@ def get_all_achievements():
     achs = {}
     # for each achievement...
     for ach in cursor:
+        # appends its data to a list
         achs[str(ach['_id'])] = JSONEncoder().encode(ach)
 
     return jsonify(achs)
 
-
-
-# update documents seen for user 
-# update features seen
+# updates the documents and topics seen by the user 
 @app.route('/api/updateUser', methods=['POST'])
 def update_user():
 
-    print('hehe', request.method, request.data)
     # takes in article ID, article features, and email from request
     data = ast.literal_eval(request.data.decode('utf-8'))
     article_id = data['articleViewed']
@@ -442,16 +444,14 @@ def update_user():
     if (len(features_seen) != len(article_feats)):
         print('ERROR: Two lists not the same length')
 
+    # updates the topics that the user has seen
     new_features_seen = [sum(x) for x in zip(features_seen, article_feats)]
 
-    # updates user in database
+    # updates user object in database
     newvalues = { "$set": { "documents_seen": usr['documents_seen'], "features_seen": new_features_seen } }
     users.update_one(userquery, newvalues)
 
-    return 'Success' 
-
-
-# TODO - API function called when user leaves document page that updates user object!
+    return
 
 if __name__ == '__main__':
 

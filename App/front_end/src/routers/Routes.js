@@ -1,22 +1,19 @@
-import React, { Component }  from 'react';
-import {BrowserRouter, Router, Route, Switch, Redirect, withRouter} from 'react-router-dom';
-import Home from '../components/Home';
-import Callback from '../auth/CallBack';
-import Auth from '../auth/auth';
-import history from '../auth/history';
-import LoginPage from '../components/LoginPage'
-import NavBar from '../components/NavBar'
+import React from 'react';
+import {Router, Route, Switch} from 'react-router-dom';
 import { createMuiTheme } from '@material-ui/core/styles';
-import {Link} from "react-router-dom";
 import { ThemeProvider } from '@material-ui/styles';
 import Dashboard from '../components/Dashboard';
 import DocumentPageFT from '../components/DocumentPageFT'
 import DocumentPage from '../components/DocumentPage'
 import { useAuth0 } from "../react-auth0-spa";
-import Temp from '../components/Temp';
 import AchievementsPage from '../components/AchievementsPage';
 import MyDocumentsPage from '../components/MyDocumentsPage';
+import Home from '../components/Home';
+import Auth from '../auth/auth';
+import history from '../auth/history';
+import NavBar from '../components/NavBar'
 
+// application theme
 const theme = createMuiTheme({
   typography: {
     fontFamily: [
@@ -31,17 +28,14 @@ const theme = createMuiTheme({
   },
 });
 
+// creates Auth object for authentication
 const auth = new Auth();
 
-const handleAuthentication = (nextState, replace) => {
-  if (/access_token|id_token|error/.test(nextState.location.hash)) {
-    auth.handleAuthentication();
-  }
-}
-
+// component that uses React Router to route the user to diff. screens
 function Routes() {
   const { loading , user} = useAuth0();
 
+  // displays loading screen if authentication processing
   if (loading) {
     return <div>Loading...</div>;
   }

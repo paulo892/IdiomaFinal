@@ -16,6 +16,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import axios from 'axios';
 import Typography from '@material-ui/core/Typography';
 
+// component styles
 const styles = theme => ({
     button: {
         color: '#2268B2',
@@ -110,8 +111,7 @@ const styles = theme => ({
     }
 })
 
-
-// TODO - Look into way to make this dynamic
+// labels for use in the creation of the documents table
 const labels = [
     {id: 'title', numeric: false, disablePadding: false, label: 'Title'},
     {id: 'subtitle', numeric: false, disablePadding: true, label: 'Subtitle'},
@@ -119,6 +119,7 @@ const labels = [
     {id: 'link', numeric: false, disablePadding: false, label: 'Link'}
 ];
 
+// a sorter helper function for stably sorting a list of objects
 function stableSort(array, cmp) {
     const stabilizedThis = array.map((el, index) => [el, index]);
     stabilizedThis.sort((a,b) => {
@@ -129,45 +130,47 @@ function stableSort(array, cmp) {
     return stabilizedThis.map(el => el[0]);
 }
 
+// a comparator helper function to determine the order of two objects
 function desc(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) return -1;
     if (b[orderBy] > a[orderBy]) return 1;
     return 0;
 }
 
+// a helper function to facilitate the document sorting using the desc() function above
 function getSorting(order, orderBy) {
     return order === 'desc' ? (a,b) => desc(a,b,orderBy) : (a,b) => -desc(a,b,orderBy);
 }
 
-// Edited. ORIGINAL FROM: https://medium.com/@DylanAttal/truncate-a-string-in-javascript-41f33171d5a8
+// a helper function to truncate a string. Adapted from: https://medium.com/@DylanAttal/truncate-a-string-in-javascript-41f33171d5a8
 function truncateString(str) {
-    // If the length of str is less than or equal to num
-    // just return str--don't truncate it.
-    console.log(str)
+    // if length is less than some threshold, returns full string
     if (str.length <= 50) {
       return str
     }
-    // Return str truncated with '...' concatenated to the end of str.
+
+    // else, returns truncated string with '...' appended
     var temp = str.slice(0, 100);
     var ind = temp.lastIndexOf(' ');
     return temp.substring(0, ind) + '...';
   }
 
+  // component that holds and enables engagement with a sortable table of documents seen by the user
 export default withStyles(styles)(class MyDocumentsPage extends React.Component {
 
     state = {
-        orderBy: 'title',
-        order: 'asc',
-        search: "",
-        docs: []
+        orderBy: 'title', // feature by which to order
+        order: 'asc', // sorting order
+        search: "", // search term
+        docs: [] // documents to display
     }
 
+    // retreieves documents by the user email and search field from DB
     getDocuments = async(display) => {
         // only shows display if first time reaching page
         if (display)
             this.setState({...this.state, isFetching: true});
 
-        console.log(this.state.search)
         await axios.get(
             '/api/getUserDocuments',
             {
@@ -182,12 +185,10 @@ export default withStyles(styles)(class MyDocumentsPage extends React.Component 
         ).then((data) => {
             // saves the documents
             let documents = data['data'];
-            //console.log(this.state.search);
 
             // converts each document to JS dictionary
             var conv_docs = {}
             for (var key in documents) {
-                //console.log(key);
                 conv_docs[key] = JSON.parse(documents[key]);
             }
 
@@ -196,21 +197,22 @@ export default withStyles(styles)(class MyDocumentsPage extends React.Component 
             for (var key in conv_docs) {
                 doc_list.push(conv_docs[key]);
             }
-            //console.log(doc_list)
 
             this.setState({docs: doc_list, isFetching: false});
         })
     } 
 
+    // on mount, attempts to retrieve documents from the DB
     componentDidMount() {
         this.getDocuments(true);
     }
 
+    // alters the state to take into account updated search term
     handleSearchChange = (e) => {
-        console.log('B')
         this.setState({search: e.target.value}, () => this.getDocuments(false));
     }
 
+    // initiates a sort using current state
     handleRequestSort = property => event => {
         const orderBy = property;
         let order = 'desc';
@@ -218,12 +220,6 @@ export default withStyles(styles)(class MyDocumentsPage extends React.Component 
         if (this.state.orderBy === property && this.state.order === 'desc') order = 'asc';
         this.setState({order, orderBy});
     };
-
-    // TODO - routing and other component
-    isSelected = property => {
-        console.log('success');
-    }
-
 
     render() {
     
@@ -289,7 +285,6 @@ export default withStyles(styles)(class MyDocumentsPage extends React.Component 
                                         return (
                                             <TableRow
                                                 hover
-                                                onClick={event => this.isSelected(n._id)}
                                                 tabIndex={-1}
                                                 key={n._id}
                                                 className={classes.tableRow}
@@ -322,5 +317,3 @@ export default withStyles(styles)(class MyDocumentsPage extends React.Component 
             )
         }
     })
-
-    //<Grid item><Button component={Link} to={{pathname: "/doc", state: {articleId: this.state.articleId}}} classes={{root: classes.loginButton, disabled: classes.loginButtonDisabled}} variant="contained" disabled={!this.state.articlePrepared}>Continue</Button></Grid>

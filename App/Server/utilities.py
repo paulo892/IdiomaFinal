@@ -17,27 +17,23 @@ import numpy as np
 import spacy
 import sklearn
 
-
+# topologically sorts argument dictionary
 def top_sort_topics(top_dict):
+    return toposort_flatten(top_dict)
 
-    top_sort = toposort_flatten(top_dict)
-
-    return top_sort
-
+# featurizes the text
 def featurize_text(text):
-    # TOWRITE - talk about the process of elimination you had to do against the github repo for the tagger
-    # passado subjuntivo is actually preterito imperfeito
-    # TODO - straighten out list of topics later (https://www.soportugues.com.br/secoes/morf/morf62.php)
 
     # loads spacy model and tags text
     nlp = spacy.load('pt_core_news_sm')
     text = text
     doc = nlp(text)
-
     tagged_text = [(w.text, w.tag_, w.pos_, w.lemma_, w.idx) for w in doc]
-    print(tagged_text)
+
+    # list of irregular verbs for consideration in featurization
     irregulars = ['ser', 'estar', 'poder', 'trazer', 'vir', 'fazer', 'dar', 'ir', 'ter', 'ouvir', 'ler', 'dizer', 'ver', 'querer']
 
+    # number of times each feature appears in the text (see mongo_connect.py for mapping)
     feature_counts = {
         0:0,
         1:0,
@@ -64,116 +60,111 @@ def featurize_text(text):
         22:0
     }
 
-    # get counts for most features in the text
+    # for each token in the text...
     for i, token in enumerate(tagged_text):
 
+        # saves the word, description, and lemma
         word = token[0]
         desc = token[1]
         lemma = token[3]
 
-        # TODO - build dictionaries to reference against in determining whether regulars or irregulars
-
-        # presente indicativo (regular e irregular)
+        # checks if present tense, regular or irregular
         if 'PR' in desc and 'IND' in desc:
             if lemma in irregulars:
                 feature_counts[1] = feature_counts[1] + 1
             else:
                 feature_counts[0] = feature_counts[0] + 1
 
-        # pretérito indicativo (regular e irregular)
+        # checks if preterite tense, regular or irregular
         elif 'PS' in desc and 'IND' in desc:
             if lemma in irregulars:
                 feature_counts[4] = feature_counts[4] + 1
             else:
                 feature_counts[3] = feature_counts[3] + 1
 
-        # imperfeito indicativo (regular e irregular)
+        # checks if imperfect tense, regular or irregular
         elif 'IMPF' in desc and 'IND' in desc:
             if lemma in irregulars:
                 feature_counts[6] = feature_counts[6] + 1
             else:
                 feature_counts[5] = feature_counts[5] + 1
 
-        # imperfeito subjuntivo
+        # checks if imperfect subjunctive tense, regular or irregular
         elif 'IMPF' in desc and 'SUBJ' in desc:
             if lemma in irregulars:
                 feature_counts[8] = feature_counts[8] + 1
             else:
                 feature_counts[7] = feature_counts[7] + 1
 
-        # gerúndio
+        # checks if gerund
         elif 'GER' in desc:
             feature_counts[9] = feature_counts[9] + 1
 
-        # presente subjuntivo (regular e irregular)
+        # checks if present subjunctive tense, regular or irregular
         elif 'PR' in desc and 'SUBJ' in desc:
             if lemma in irregulars:
                 feature_counts[12] = feature_counts[12] + 1
             else:
                 feature_counts[11] = feature_counts[11] + 1
 
-        # futúro indicativo (regular e irregular)
+        # checks if future indicative, regular or irregular
         elif 'FUT' in desc and 'IND' in desc:
             if lemma in irregulars:
                 feature_counts[15] = feature_counts[15] + 1
             else:
                 feature_counts[14] = feature_counts[14] + 1
 
-        # condicional (regular e irregular)
+        # checks if conditional tense, regular or irregular
         elif 'COND' in desc:
             if lemma in irregulars:
                 feature_counts[18] = feature_counts[18] + 1
             else:
                 feature_counts[17] = feature_counts[17] + 1
 
-        # número
+        # checks if number
         elif 'NUM' in desc:
             feature_counts[22] = feature_counts[22] + 1
 
-
-        # perfeitos
+        # if token is a perfect tense...
         if 'PCP' in desc:
 
-            # will not consider first token
+            # skips the first term
             if i != 0:
-
+                # looks back at the first term to determine type of perfect tense
                 prev = tagged_text[i - 1][1].strip()
 
-                # pretérito perfeito composto
+                # checks if preterite perfect composite tense
                 if prev in ['tenho', 'tem', 'temos', 'têm']:
                     feature_counts[10] = feature_counts[10] + 1
 
-                # pretérito mais-que-perfeito composto
+                # checks if preterite more-than-perfect composite tense
                 elif prev in ['tinha', 'tinham', 'tínhamos']:
                     feature_counts[13] = feature_counts[13] + 1
 
-                # futúro composto
+                # checks if future perfect composite tense
                 if prev in ['terei', 'terá', 'teremos', 'terão']:
                     feature_counts[16] = feature_counts[16] + 1
 
-        # ser e estar
+        # checks for 'ser' or 'estar'
         if lemma == 'ser' or lemma == 'estar':
             feature_counts[2] = feature_counts[2] + 1
 
-        # superlativo absoluto
+        # checks for superlatives
         if word.find('íssimo') != -1:
             feature_counts[20] = feature_counts[20] + 1
 
-        # TODO - deal with interrogativos e preposições
-
     # converts the dict to a list and returns
     feature_list = list(feature_counts.values())
-
     return feature_list
 
+# featurizes all of the documents in the path directory, 
+# dumping the results in docs_featurized_1.json
 def featurize_documents(path):
     docs = open(path, 'r+')
     data = json.load(docs)
     docs_featurized = []
 
     for i, doc in enumerate(data):
-        #if i > 10:
-            #break
         features = featurize_text(doc['text'])
         doc['features'] = features
         docs_featurized.append(doc)
@@ -181,33 +172,29 @@ def featurize_documents(path):
     with open('docs_featurized_1.json', 'w') as outfile:
         json.dump(docs_featurized, outfile)
 
-    print(docs_featurized)
-
+# applies the modeling scheme to the featurized data
 def model_documents(path):
+    # opens the documents, as well as their featurized version
     docs = open(path, 'r+')
     data = json.load(docs)
-
     docs_featurized = open("../../Scrapers/DiarioNoticias/DiarioNoticias/featurized_diario_noticias_50iter.json", 'r+')
     data_featurized = json.load(docs_featurized)
 
     docs_modeled = []
-    model = load('../../Models/forest.joblib') 
 
-    # TODO - get data in the same format as the model application script, or figure out how to do it with json format
-    # docid,sentences,words,syllables,letters,unique,ttr,flesch-adap,coleman,flesch-gradelevel,ari,awl,awlstd,psfl,zh,wiki,brescola
-    #[('sentences', 17), ('words', 497), ('syllables', 998), ('letters', 2533), ('unique', 251), ('ttr', 0.5050301810865191), ('flesh-adap', 7.280291158717024), ('fern-huerta', 86.32221327967807), ('coleman', 16.679820925553326), ('flesch-grade', 19.40937838797491), ('ari', 17.192536394839628), ('awl', 5.096579476861167), ('awlstd', 3.1665264420926857)]
+    # loads the models
+    # TODO - change this
+    model = load('../../Models/forest.joblib') 
 
     res_dict = {}
 
     # for each document in json...
     for i, doc in enumerate(data):
 
+        # copies the document
         new_doc = doc
 
-        if i % 100 == 0:
-            print(i)
-
-        # get document link
+        # gets the document link
         link = doc['link']
         syntactic_feats = data_featurized[link]
 
@@ -219,8 +206,6 @@ def model_documents(path):
         # appends each relevant doc feature to list (features in csv)
         doc_elements = []
 
-        # docid [link]
-        #doc_elements.append(link)
         # sentences
         doc_elements.append(syntactic_feats[0][1])
         # words
@@ -237,7 +222,7 @@ def model_documents(path):
         doc_elements.append(syntactic_feats[6][1])
         # coleman
         doc_elements.append(syntactic_feats[8][1])
-        # flesch-gradelevel
+        # flesch-grade level
         doc_elements.append(syntactic_feats[9][1])
         # ari
         doc_elements.append(syntactic_feats[10][1])
@@ -246,21 +231,21 @@ def model_documents(path):
         # awlstd
         doc_elements.append(syntactic_feats[12][1])
 
-        # TODO - Figure out how to implement feature selection here as well!
-        #print(doc_elements)
-
-
-
+        # predicts using the model
         pred = model.predict(np.asarray(doc_elements).reshape(1, -1))
+
+        # saves the predicted label in new document
         new_doc['diff'] = pred[0]
         docs_modeled.append(new_doc)
 
+    # writes the result to a file
     f = open('final_featurized_diario_noticias_50iter.json', 'w+')
     f.write(json.dumps(docs_modeled))
     f.close()
 
 if __name__ == '__main__':
 
+    # testing calls
     featurize_text("Eu vou começar a jogar à bola.")
-    #featurize_documents("../../Scrapers/DiarioNoticias/DiarioNoticias/diario_noticias_50iter.json")
-    #model_documents("./docs_featurized_1.json")
+    featurize_documents("../../Scrapers/DiarioNoticias/DiarioNoticias/diario_noticias_50iter.json")
+    model_documents("./docs_featurized_1.json")
