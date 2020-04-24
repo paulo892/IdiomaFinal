@@ -9,6 +9,7 @@ import pymongo
 from bson.objectid import ObjectId
 from bson.json_util import dumps
 import json
+import string
 import utilities
 import numpy as np
 from urllib.parse import quote_plus
@@ -144,6 +145,12 @@ NUMBER_OF_FEATURES = len(indices_to_topics)
 THRESHOLDS_FAM = [0, 10, 50, 100]
 THRESHOLDS_PREV = [0, 5, 10, 20]
 
+# number of thematical subjects to offer user
+SUBS = 25
+
+# score bonus for requested tag appearing in article
+BONUS = 0.4
+
 # helper class for writing to JSON
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
@@ -171,6 +178,25 @@ def get_user_experience():
     usr_exp = usr['features_seen']
 
     return jsonify(usr_exp)
+
+# retrieves the top 100 most common tags in data
+@app.route('/api/getCommonTags', methods=['GET'])
+def get_tags():
+    # opens the corresponding file
+    f = open('../../Data/top_100_tags.json', 'r')
+    contents = json.load(f)
+    f.close()
+
+    # converts list to dict to appease Axios return types
+    content_dict = {}
+    for i, con in enumerate(contents):
+        if i >= SUBS:
+            break
+        tag = con[0]
+        tag = string.capwords(tag)
+        content_dict[i] = tag
+
+    return content_dict
 
 # retrieves an appropriate article by user input and preferences
 @app.route('/api/getArticleId', methods=['GET','POST'])
@@ -297,6 +323,9 @@ def get_article_by_input_and_prefs():
         # retrieves the number of appearances of all topics in text
         feature_prev = doc['features']
 
+        # retrieves the document's tags
+        tags = doc['tags']
+
         # normalizes the appearance count, according to system similar to one above
         feature_prev_normalized = [0 if x < THRESHOLDS_PREV[1] else 0.5 if x < THRESHOLDS_PREV[2] else 1 for x in feature_prev]
 
@@ -310,9 +339,15 @@ def get_article_by_input_and_prefs():
         # adds the above products together, and divides by the number of topics
         app = np.sum(temp) / NUMBER_OF_FEATURES
 
+        # if any of the requested tags are in the article, adds the BONUS modifier to appropriateness
+        for attr in attributes:
+            if attr in tags:
+                app += BONUS
+                break
+
         doc_apps[doc['_id']] = app
 
-        ## this process produces a number in the range [-1,1]
+        ## this process produces a number in the range [-1,1 + BONUS]
     
     # selects the most appropriate document among those sampled
     best_doc = max(doc_apps, key=doc_apps.get)

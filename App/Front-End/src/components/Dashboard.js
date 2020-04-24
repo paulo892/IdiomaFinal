@@ -64,6 +64,12 @@ const styles = theme => ({
         color: '#2268B2',
         width: '15vw'
     },
+    expansionPanelSingle: {
+        backgroundColor: '#f5f5f5',
+        marginBottom: '3vh',
+        color: '#2268B2',
+        width: '30vw'
+    },
     backgroundDiv: {
         backgroundColor: '#7AB4D8',
         height: 'auto',
@@ -90,16 +96,20 @@ export default withStyles(styles)(class LoginPage extends React.Component {
     intermediate_topics = ["Pretérito Indicativo (Regular)", "Pretérito Indicativo (Irregular)", "Imperfeito (Regular)", "Imperfeito (Irregular)","Presente Gerúndio","Presente Subjuntivo (Regular)","Presente Indicativo (Irregular)"];
     advanced_topics = ["Passado Subjuntivo (Regular)","Passado Subjuntivo (Irregular)","Presente Perfeito","Pretérito Perfeito","Futúro Indicativo (Regular)","Futúro Indicativo (Irregular)","Futúro Perfeito","Condicional (Regular)","Condicional (Irregular)"];
     countries = ["Portugal", "Brazil", "Angola", "Mozambique"]
-    subjects = ['Politics', 'Science', 'Technology', 'Economics', 'Culture']
+    subjects = []
+
+    
 
     state = {
+        attributesAvailable: [], // available thematical subjects,
         attributes: [], // search filters
         experience: [], // user experience
         articleId: null, // generated article ID
         articlePrepared: false // boolean showing whether article has been prepared
     }
 
-    // on mount, retrieves the user experience from the DB
+    // on mount, retrieves the user experience from the DB as well 
+    // as the available attributes to select from
     componentWillMount() {
         axios.get(
             '/api/getUserExperience',
@@ -113,7 +123,19 @@ export default withStyles(styles)(class LoginPage extends React.Component {
             }
         ).then((data) => {
             const result = data['data'];
-            this.setState({experience: result});
+            axios.get(
+                '/api/getCommonTags',
+                {
+                    headers: {'Content-type': 'application/json'}
+                }
+            ).then((data) => {
+                var tags = data['data'];
+                var list = [];
+                for (const [key, value] of Object.entries(tags)) {
+                    list.push(value);
+                  }
+                this.setState({experience: result, attributesAvailable: list})
+            })
         })
     }
 
@@ -145,6 +167,7 @@ export default withStyles(styles)(class LoginPage extends React.Component {
         let checked = e.target.checked;
         let val = e.target.value;
         let vals = this.state.attributes;
+        console.log(vals)
 
         if (checked) {
             vals.push(val);
@@ -210,38 +233,16 @@ export default withStyles(styles)(class LoginPage extends React.Component {
                                 alignItems="center"
                                 justify="center"
                             >
-                                <Grid item xs={4} justify="center" styles={{marginRight: '2vw', marginLeft: '2vw'}}>
-                                    <ExpansionPanel elevation={5} classes={{root:classes.expansionPanel, expanded:classes.temp2}}>
-                                        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} styles={{marginRight: '2vw', marginLeft: '2vw'}}>
-                                            <Typography variant="h5">Countries</Typography>
-                                        </ExpansionPanelSummary>
-                                        <ExpansionPanelDetails styles={{marginRight: '2vw', marginLeft: '2vw'}}>
-                                            <FormControl component="fieldset" >
-                                                <Grid container direction='row'>
-                                                    {this.countries.map((topic) => {
-                                                        return <FormControlLabel 
-                                                            classes={{label: classes.temp2}}
-                                                            value={topic}
-                                                            control={<Checkbox color="primary" />}
-                                                            label={topic}
-                                                            labelPlacement="start"
-                                                            onChange={this.onClick}
-                                                        />
-                                                    })}
-                                                </Grid>
-                                            </FormControl>    
-                                        </ExpansionPanelDetails>
-                                    </ExpansionPanel>
-                                </Grid>
-                                <Grid item xs={4} justify="center">
-                                    <ExpansionPanel classes={{root:classes.expansionPanel, expanded:classes.temp2}} elevation={5}>
+                                
+                                <Grid itemjustify="center">
+                                    <ExpansionPanel classes={{root:classes.expansionPanelSingle, expanded:classes.temp2}} elevation={5}>
                                         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} styles={{marginRight: '2vw', marginLeft: '2vw'}}>
                                         <Typography variant="h5">Topics</Typography>
                                         </ExpansionPanelSummary>
                                         <ExpansionPanelDetails styles={{marginRight: '2vw', marginLeft: '2vw'}}>
                                             <FormControl component="fieldset" >
                                                 <Grid container direction='row'>
-                                                    {this.subjects.map((topic) => {
+                                                    {this.state.attributesAvailable.map((topic) => {
                                                         return <FormControlLabel 
                                                             classes={{label: classes.temp2}}
                                                             value={topic}

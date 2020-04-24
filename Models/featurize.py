@@ -7,6 +7,7 @@ import math
 import spacy
 import pickle
 import sklearn
+import operator
 from sklearn.ensemble import RandomForestClassifier
 
 CLASSFEAT_TO_INDEX = {
@@ -329,42 +330,75 @@ def model_documents(syntactic_feats):
 if __name__ == '__main__':
 
     # takes in name of file
-    filename = input("Enter the name of the file to featurize: ")
+    #filename = input("Enter the name of the file to featurize: ")
 
     # opens file to be featurized
-    file = open(filename, "r+")
-    contents = json.load(file)
+    #file = open(filename, "r+")
+    #contents = json.load(file)
 
-    featurized_docs = []
+    #featurized_docs = []
 
     # for each document in file...
-    for i, doc in enumerate(contents):
-        doc_id = doc['link']
-        formatted = doc['text']
+    #for i, doc in enumerate(contents):
+    #    doc_id = doc['link']
+    #    formatted = doc['text']
 
-        if i % 10 == 0:
-            print('HERE')
+        #if i % 10 == 0:
+        #    print('HERE')
 
         # calculates features for classification
-        class_features = featurize_class(formatted)
+        #class_features = featurize_class(formatted)
 
         # uses classification features to classify document difficulty
-        diff = model_documents(class_features)
+        #diff = model_documents(class_features)
 
         # if 'n/a' returned, does not include document
-        if diff == 'n/a':
-            continue
+        #if diff == 'n/a':
+         #   continue
 
         # calculates features for document selection
-        sel_features = featurize_sel(formatted)
+        #el_features = featurize_sel(formatted)
 
         # adds classification and selection features to document
-        doc['features'] = sel_features
-        doc['diff'] = diff
-        featurized_docs.append(doc)
+        #doc['features'] = sel_features
+        #doc['diff'] = diff
+        #featurized_docs.append(doc)
 
     # writes feature sets to a document
-    file = filename.split('/')
-    f = open('./Data/featurized_' + file[-1], 'w+')
-    f.write(json.dumps(featurized_docs))
+    #file = filename.split('/')
+    #f = open('./Data/featurized_' + file[-1], 'w+')
+    #f.write(json.dumps(featurized_docs))
+    #f.close()
+
+    ## creates list of the 100 most common tags in the DB
+
+    # opens correct file
+    f = open('../Data/featurized_diario_noticias_50iter.json', 'r')
+    contents = json.load(f)
     f.close()
+
+    tag_counts = {}
+
+    # for each document...
+    for doc in contents:
+        tags = doc['tags']
+
+        # for each tag...
+        for tag in tags:
+            # updates its count in the dict
+            if tag in tag_counts:
+                tag_counts[tag] += 1
+            else:
+                tag_counts[tag] = 1
+
+    # sorts the dict
+    sorted_tags = sorted(tag_counts.items(), key=operator.itemgetter(1),reverse=True)
+
+    # saves the first 100 entries in the list
+    top_100 = sorted_tags[0:100]
+
+    # writes the result to a file
+    f = open('../Data/top_100_tags.json', 'w+')
+    f.write(json.dumps(top_100))
+    f.close()
+
