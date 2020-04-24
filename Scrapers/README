@@ -1,12 +1,9 @@
 # Installation Instructions:
- - Scrapy-Spash: PULL INSTRUCTIONS FROM BOOKMARKED DOC
- - Pull scrapy-splash container: docker pull scrapinghub/splash
+ - Run "pip install pipenv" if "pipenv" not installed
+ - Enter virtual environment by running "pipenv shell"
 
 # Running instructions:
- - Load container for Scrapy-Splash with this command: docker run -p 5023:5023 -p 8050:8050 -p 8051:8051 scrapinghub/splash 
- - To run each spider:
- 	- cd to inner directory
- 	- use pipenv shell to run pip shell
- 	- run 'python run.py'
+ - Run "scrapy crawl articles -o '../../../Data & Preprocessing Scripts/diario_noticias_50iter.json'" to run the spider and save results in correct directory
 
-Scraper only works on Cidades up to and including 26 "View more"s, 10 Poder, 
+# Notes:
+ - Scraper currently limited by number of times it can load more content on a given page

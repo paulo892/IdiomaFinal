@@ -23,7 +23,7 @@ mongo = pymongo.MongoClient('mongodb+srv://paulo892:hello@cluster0-farth.mongodb
 db = pymongo.database.Database(mongo, 'idioma')
 users = pymongo.collection.Collection(db, 'users')
 achievements = pymongo.collection.Collection(db, 'achievements')
-documents = pymongo.collection.Collection(db, 'final_featurized_diario_noticias_50iter')
+documents = pymongo.collection.Collection(db, 'featurized_diario_noticias_50iter')
 
 # necessary Flask configurations
 app = Flask(__name__, static_folder='../build/static', template_folder='../build/')
@@ -140,8 +140,9 @@ topics_to_indices = {
 # total number of features in script
 NUMBER_OF_FEATURES = len(indices_to_topics)
 
-# thresholds for determining user familiarity with features
-THRESHOLDS = [0, 10, 50, 100]
+# thresholds for determining user familiarity with features and for feature prevalence in doc
+THRESHOLDS_FAM = [0, 10, 50, 100]
+THRESHOLDS_PREV = [0, 5, 10, 20]
 
 # helper class for writing to JSON
 class JSONEncoder(json.JSONEncoder):
@@ -236,13 +237,13 @@ def get_article_by_input_and_prefs():
             # creates list of user's familiarity with topics on which this topic is dependent
             for dep in deps:
                 occ = usr_feats_seen[dep]
-                if occ < 0:
+                if occ < THRESHOLDS_FAM[0]:
                     print('ERROR: User cannot have seen feature less than 0 times.')
                 # if user has seen feature b/w 0 and 10 times, unfamiliar -> 0
-                elif occ < 10:
+                elif occ < THRESHOLDS_FAM[1]:
                     lvl = 0
                 # if user has seen feature b/w 10 and 50 times, familiar -> 1
-                elif occ < 50:
+                elif occ < THRESHOLDS_FAM[2]:
                     lvl = 1
                 # if user has seen feature over 50 times, very familiar -> 2
                 else:
@@ -288,7 +289,7 @@ def get_article_by_input_and_prefs():
     sample_size = 100 if len(documents_unseen) >= 100 else len(documents_unseen)
     sampled_docs = random.sample(documents_unseen, sample_size)
 
-    app_docs = {}
+    doc_apps = {}
 
     # for each sampled doc...
     for doc in sampled_docs:
@@ -297,7 +298,7 @@ def get_article_by_input_and_prefs():
         feature_prev = doc['features']
 
         # normalizes the appearance count, according to system similar to one above
-        feature_prev_normalized = [0 if x < THRESHOLDS[1] else 0.5 if x < THRESHOLDS[2] else 1 for x in feature_prev]
+        feature_prev_normalized = [0 if x < THRESHOLDS_PREV[1] else 0.5 if x < THRESHOLDS_PREV[2] else 1 for x in feature_prev]
 
         # collates the relevances of each topic
         relevance_list = []
@@ -309,18 +310,12 @@ def get_article_by_input_and_prefs():
         # adds the above products together, and divides by the number of topics
         app = np.sum(temp) / NUMBER_OF_FEATURES
 
+        doc_apps[doc['_id']] = app
+
         ## this process produces a number in the range [-1,1]
-
-        # labels each document with an 'appropriateness threshold' of > 0.2 as appropriate
-        # and adds that document to a list
-        if app >= 0.2:
-            app_docs[doc['_id']] = app
-
-    # randomly selects a document from those deemed appropriate
-    best_doc = random.choice(list(app_docs.keys()))
     
-    # alternative approach -> max appropriateness
-    # best_doc = max(app_docs, key=app_docs.get)
+    # selects the most appropriate document among those sampled
+    best_doc = max(doc_apps, key=doc_apps.get)
 
     return str(best_doc)
 

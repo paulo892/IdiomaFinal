@@ -21,114 +21,101 @@ class ArticleItem(scrapy.Item):
 
 class ArticleSpider(scrapy.Spider):
 
+	# spider name
 	name = "articles"
 
+	# url from which to start search
 	start_urls = [
 		'https://dn.pt/'
 	]
 
 	def __init__(self):
+		# initializes Firefox webdriver for scraping
 		self.driver = webdriver.Firefox(executable_path='/Users/PauloFrazao/Documents/Thesis/IdiomaFinal/Scrapers/DiarioNoticias/DiarioNoticias/geckodriver')
 
 	def parse(self, response):
-
+		# for each heading link...
 		for aside in response.css('aside.t-h-func-links ul'):
 			for link in aside.css('li'):
 
-				# extracts link of each heading
+				# extracts link
 				link = link.css('::attr(href)').get()
-				#print('Possible category:', link)
 
-				# only follows heading if it is valid
+				# only follows link if it is "valid"
 				if link[0:5] != '/tag/':
-					# or link != '/tag/cidades.html'
-					#print('category scrapped :(')
 					continue
 
-				# constructs tag of each heading
+				# constructs tag for each heading
 				idx = link.find('.html')
 				tag = link[5:idx]
 
 				# follows each heading link
 				newLink = 'https://dn.pt' + link
-				
 				yield SeleniumRequest(url=newLink, callback=self.parse_category)
 
 
 	def parse_category(self, response):
-
+		# gets the response URL
 		self.driver.get(response.url)
 
+		# for 100 iterations...
 		for i in range(100):
 			try:
-				print('OJOEJOEFJ', i)
+				# if not the first iteration...
 				if i != 0:
 					try:
+						# scrolls to the bottom of the page and clicks "next page" button
 						actions = ActionChains(self.driver)
 						last_height = self.driver.execute_script("return document.body.scrollHeight")
 						self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 						actions.move_to_element(next).click().perform()
 						next = self.driver.find_element_by_class_name('t-btn-8')
-						#element = WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, "t-btn-8"))).click()
 					except Exception as e2:
-						print("YOINKSSS")
 						print(e2)
-					#self.driver.execute_script("arguments[0].click();", next)
+				# if first iteration...
 				else:
+					# finds and clicks "next page" button
 					next = self.driver.find_element_by_class_name('t-btn-8')
 					next.click()
+				# waits for rest of page to load
 				time.sleep(15)
 			except Exception as e:
 				print(e)
-				print('RUHROH')
 
-		#resp = response.css('header.t-am-head')
-
+		# gets all of the links on the page
 		links = [i.get_attribute('href') for i in self.driver.find_elements_by_css_selector('.t-am-text')]
-		print('fosforfjs', len(links))
 
-		# for each potential link, ...
+		# for each link...
 		for link in links:
-
-			#print('potential link:', link)
-
-			# discards links that link to tags
+			# discards if links to tags
 			if link[1:4] == 'tag':
-				#print('link scrapped :(')
 				continue
 
-			# discards links without ids
+			# discards if has no IDs
 			res = re.findall(r"\d{8}.html", link)
 			if len(res) == 0:
-				#print('link scrapped :(')
 				continue
 
-			# follows link if greater than prior count
-			#newLink = 'https://dn.pt' + link 
-			#print('final link:', newLink)
+			# follows link
 			yield scrapy.Request(link, self.parse_article)
 
-
 	def parse_article(self, response):
+		# fills in "easy" article fields
 		item = ArticleItem()
 		item["link"] = response.url
 		item["title"] = response.css('h1.t-af1-head-title::text').get()
 		item["subtitle"] = response.css('div.t-af1-head-desc p::text').get()
 		item["author"] = response.css('div.t-af-info-author span::text').get()
 		item["date"] = response.css('div.t-af-info-1 time::text').get()
-		# must figure out how to get the subheadings too!
-		# must figure out how to get the pictures too!
 
+		# extracts text by adding each paragraph
 		item["text"] = "" 
 		for paragraph in response.css('div.t-af1-c1-body p::text').getall():
 			item["text"] += paragraph
 
+		# extracts each tag
 		item["tags"] = []
 		for tag in response.css('nav.t-article-list-3-body ul li a span::text').getall():
 			item["tags"].append(tag)
-			#print(tag)
-			#for nxt in tag.css('li').getall():
-			#	for onemore in nxt.css('a::text'):
-			#		item["tags"].append(onemore)
 
 		return item
