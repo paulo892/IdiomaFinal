@@ -44,7 +44,7 @@ function Routes() {
     <ThemeProvider theme={theme}>
       <Router history={history} component={Home}>
         <div>
-          <NavBar auth={auth} />
+          <NavBar auth={auth} email={user != null ? user.email : 'none'}/>
           <Switch>
             <Route exact path="/" render={(props) => <Home auth={auth}  {...props} />} />
             <Route path="/dash" render={(props) => <Dashboard auth={auth} email={user.email} {...props} />} />

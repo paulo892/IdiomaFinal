@@ -149,7 +149,14 @@ THRESHOLDS_PREV = [0, 5, 10, 20]
 SUBS = 25
 
 # score bonus for requested tag appearing in article
-BONUS = 0.4
+BONUS = 0.1
+
+# mapping of achievements to ObjectIDs
+ACHS_TO_IDS = {
+    'first_session': '5dd603c61c9d4400004cadd8',
+    'second_session': '5dd604231c9d4400004cadda',
+    'first_doc': '5e655fb81c9d440000df11a1'
+}
 
 # helper class for writing to JSON
 class JSONEncoder(json.JSONEncoder):
@@ -197,6 +204,42 @@ def get_tags():
         content_dict[i] = tag
 
     return content_dict
+
+# increments the number of user sessions
+@app.route('/api/updateUserSessions', methods=['GET', 'POST'])
+def update_user_sessions():
+    # takes in user email from request
+    email = request.args['email']
+
+    # retrieves user object
+    userquery = {"email": email}
+    cursor1 = users.find(userquery)
+
+    if (cursor1.count() > 1):
+        print('ERROR: More than one user with same email.')
+
+    usr = cursor1[0]
+
+    # retrieves user's session count and increments it
+    sessions = usr['sessions_completed']
+    sessions += 1
+
+    # gets list of user achievements
+    ach = usr['achievements']
+
+    # if user now at one session completed...
+    if sessions == 1:
+        ach.append(ObjectId(ACHS_TO_IDS['first_session']))
+
+    # else if user now at two sessions completed...
+    elif sessions == 2:
+        ach.append(ObjectId(ACHS_TO_IDS['second_session']))
+
+    # updates user object
+    newvalues = { "$set": { "sessions_completed": sessions, "achievements": ach}}
+    users.update_one(userquery, newvalues)
+
+    return 'Success'
 
 # retrieves an appropriate article by user input and preferences
 @app.route('/api/getArticleId', methods=['GET','POST'])
@@ -343,6 +386,7 @@ def get_article_by_input_and_prefs():
         for attr in attributes:
             if attr in tags:
                 app += BONUS
+                print(attr)
                 break
 
         doc_apps[doc['_id']] = app
