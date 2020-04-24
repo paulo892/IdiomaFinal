@@ -1,0 +1,8 @@
+# Installation Instructions:
+ - Run "pip install pipenv" if "pipenv" not installed
+ - Run "python -m spacy download pt_core_news_sm" to download spacy dependencies
+ - Enter virtual environment by running "pipenv shell"
+
+# Running instructions:
+ - Run "python master.py" to train, test, and save each of the models
+ - Run "featurize.py" to fully featurize each of the documents and deposit them in the "Data" directory

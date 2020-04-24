@@ -1,0 +1,1 @@
+{"bagging": ["sentences", "words", "syllables", "letters", "unique", "ttr", "coleman", "awlstd"], "forest": ["sentences", "words", "syllables", "letters", "unique", "ttr", "awlstd"], "mlp": ["words", "syllables", "letters", "unique", "ttr"]}

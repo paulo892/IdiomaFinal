@@ -10,14 +10,15 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.kernel_ridge import KernelRidge
 from sklearn.neighbors import KNeighborsClassifier
-
 import pandas as pd
 from sklearn.neural_network import MLPClassifier
 import pickle
-
 from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import GridSearchCV
+import json
+import os
 
+# mappings of model type to the index of each of its hyperparameters in the hyperparameter list
 hp_mappings = {
 	'sgd': {'loss': 0, 'alpha': 1},
 	'mlp': {'activation': 0, 'alpha': 1},
@@ -38,29 +39,19 @@ def train(data, model_type):
 	target_wiki = test_data.loc[:, test_data.columns == 'wiki']
 	target_brescola = test_data.loc[:, test_data.columns == 'brescola']
 
-	# TOWRITE
-	# ensures the lengths of the target data line up
-	# changed to remove BrEscola from running -> refer to Filho
-	# documents tailored to kids and teens -> want a wider sweep
-	# Explanation:
-	# Removed BrEscola because it uses documents originally just tailored for kids and teens
-	# Don't want to rely on just PSFL (despite it performing best) since it used documents just for kids and just for adults
-	# Highest accuracy but likely because its classifications are too stark -> we also don't want that to be the threshold
-	# Our "simple" and "difficult" should be from the perspective of the "average" learner!
-	# Decide to go with majority of the 3 -> fair accuracy
-	# SHOW BOTH THIS ONE'S STATS AND THE PSFL ONLY
+	# ensures the four columns are of the same length
 	length = len(target_brescola)
 	if length != len(target_zh) or length != len(target_wiki) or length != len(target_psfl):
 		print("ERROR: Lengths of four targets are not all the same.")
 
-	# aggregates the results into one column
+	# aggregates PSFL, ZH, and wiki into one column (for use later on in the script)
 	difficulties = []
 
 	# for each observation...
 	for i in range(length):
 		results = [target_psfl.values[i], target_zh.values[i], target_wiki.values[i]]
 
-		# takes the maximum occurrence, defaulting towards "difficult" in case of tie
+		# takes the maximum occurrence
 		s = 0
 		d = 0
 		for res in results:
@@ -71,18 +62,13 @@ def train(data, model_type):
 			else:
 				print('ERROR: Target value not \'d\' nor \'s\'.')
 
-		# TO-WRITE:
-		# if using the weighted system, tiebreaking in favor of d brings down overall accuracy but balances between labels
-		# doing the opposite brings up accuracy and f1 but heavily leans in favor of predicting for 's'
-		# just using psfl brings up both scores -> DISCUSS THIS -> why might this be? maybe those docs are all from psfl???
-
 		# takes the simple majority and appends to list
-		if d >= s:
+		if d > s:
 			difficulties.append('d')
 		else:
 			difficulties.append('s')
 
-	## partitions data into features and target, dropping old target columns as well as docid column
+	# drops irrelevant columns from data
 	data = test_data.drop("psfl", axis=1)
 	data = data.drop("zh", axis=1)
 	data = data.drop("wiki", axis=1)
@@ -92,7 +78,6 @@ def train(data, model_type):
 	# sets the target data according to user input - option 4 selected by default
 	print('Please select the corpora to use as ground truth: 0 - PSFL, 1 - ZH, 2 - Wiki, 3 - BrEscola, 4 - Majority of non-BrE')
 	print('Option 4 selected automatically. This setting can be changed in the individual model script.')
-	#temp = float(input())
 	temp = 4
 
 	if (temp == 0):
@@ -107,7 +92,7 @@ def train(data, model_type):
 	elif (temp == 4):
 		target = difficulties
 	
-	# TOWRITE - Note that they're fairly balanced and so not differentiating metrics by label should be fine
+	# checks to ensure dataset is fairly balanced
 	print('\n')
 	print('Number of difficult docs:' + str(target.count('d')))
 	print('Number of simpler docs:' + str(target.count('s')))
@@ -169,11 +154,9 @@ def train(data, model_type):
 		hp.append(grid.best_estimator_.n_neighbors)
 
 
-
 	X_tuning_copy = X_tuning.copy()
 
-	## performs feature selection using other scikit libraries
-
+	## performs feature selection and prints results
 	print('FEATURE SELECTION METRICS ' + model_type + ':')
 	accs = []
 	precs = []
@@ -221,10 +204,11 @@ def train(data, model_type):
 
 		fitted = mod.fit(X_train_iter, y_train_iter)
 
-		# calculates the accuracy, precision, recall, and f1-measure
+		# predicts on the tuning test set
 		y_pred = fitted.predict(X_test_iter).tolist()
 		y_true = y_test_iter
 
+		# calculates the accuracy, precision, recall, and f1-measure
 		# NOTE - Order in lists is 'd','s'
 		accuracy = accuracy_score(y_true, y_pred)
 		precision_global = precision_score(y_true, y_pred, average='binary', pos_label='d')
@@ -239,7 +223,7 @@ def train(data, model_type):
 
 		X_tuning=X_tuning_copy
 
-	# TOWRITE - For metrics, 'd' considered positive class
+	# plots the above results
 	ax = plt.gca()
 	ax.plot(rng, accs, label="Accuracies")
 	ax.plot(rng, precs, label="Precisions")
@@ -250,13 +234,13 @@ def train(data, model_type):
 	plt.title("Mag. of metrics by % of features (" + model_type + ")")
 	plt.axis('tight')
 	plt.legend()
-	plt.savefig('metrics_by_prop_features_' + model_type + '.png')
+	plt.savefig('./figures/metrics_by_prop_features_' + model_type + '.png')
 	plt.show(block=True)
 	plt.clf()
 
+	# asks the user for a reasonable decimal threshold
 	print('Please input a reasonable decimal threshold for feature selection:')
 	thresh = float(input())
-	#thresh = 0.6
 	
 	# uses the percent threshold to perform feature selection, applying it to training and test sets
 	index_test = X_test.index.tolist()
@@ -271,7 +255,16 @@ def train(data, model_type):
 	X_general = pd.DataFrame(data=X_general, index=index_train, columns=[cols[i] for i in temp])
 	X_test = pd.DataFrame(data=X_test, index=index_test, columns=[cols[i] for i in temp])
 
-	# fits a model to the testing data
+	# saves the training features to an external file for prediction
+	features_new = [cols[i] for i in temp]
+
+	with open('model_features.json', 'r+') as fp:
+		contents = json.load(fp)
+		contents[model_type] = features_new
+	with open('model_features.json', 'r+') as fp:
+		json.dump(contents, fp)
+
+	# fits the appropriate model to the training data
 	if (model_type == 'dec_tree'):
 		mod = tree.DecisionTreeClassifier()
 	elif (model_type == 'sgd'):
@@ -291,10 +284,11 @@ def train(data, model_type):
 	
 	fitted = mod.fit(X_general, y_general)
 
-	# prints evaluation metrics
+	# predicts on the general test set
 	y_pred = fitted.predict(X_test).tolist()
 	y_true = y_test
 
+	# calculates the accuracy, precision, recall, and f1-measure
 	accuracy = accuracy_score(y_true, y_pred)
 	precision_global = precision_score(y_true, y_pred, average='binary', pos_label='d')
 	recall_global = recall_score(y_true, y_pred, average='binary', pos_label='d')
@@ -303,7 +297,7 @@ def train(data, model_type):
 	print(model_type + ':', 'acc:', round(accuracy, 2),'precision_global', round(precision_global, 2),  'recall_global', round(recall_global, 2), 'f1_global', round(f1_global, 2))
 
 	# saves the model to a file
-	filename = model_type + '.sav'
+	filename = './saved_models/' + model_type + '.sav'
 	pickle.dump(fitted, open(filename, 'wb'))
 
 	return [thresh, accuracy, precision_global, recall_global, f1_global]
