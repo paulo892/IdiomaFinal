@@ -30,6 +30,10 @@ const NavBar = (props) => {
                 headers: {'Content-type': 'application/json'}
             }
         ).then((data) => {
+            const res = data['data'];
+            if (res != 'NOACH') {
+                alert("Achievement \"" + res + "\" unlocked!")
+            }
             logout();
         })}
     

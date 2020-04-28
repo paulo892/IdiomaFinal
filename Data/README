@@ -1,0 +1,5 @@
+Explanation of files:
+ - "Annotations_Adjusted.csv" - The data set used for training the models; provided by Jorge Filho and adjusted to remove any unused features
+ - "diario_noticias_50iter.json" - The texts scraped from the Diário Notícias website
+ - "featurized_diario_noticias_50iter.json" - The featurized versions of the texts scraped from the Diário Notícias website; produced by the "featurize.py" script
+ - "top_100_tags.json" - A dictionary of the 100 most popular tags among the scraped documents, as well as their counts; produced by the "featurize.py" script

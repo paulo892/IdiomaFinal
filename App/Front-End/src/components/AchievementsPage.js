@@ -218,7 +218,7 @@ export default withStyles(styles)(class AchievementsPage extends React.Component
                                                             <Typography style={{color: '#3D8AC8'}} variant="h6">{n['desc']}</Typography>
                                                         </Grid>
                                                         <Grid item xs>
-                                                            <Typography style={{color: '#3D8AC8'}} variant="subtitle1">Acquired: {n['date_achieved']}</Typography>
+                                                            <Typography style={{color: '#3D8AC8'}} variant="subtitle1">Congratulations!</Typography>
                                                         </Grid>
                                                     </Grid>   
                                                 </Grid>
@@ -250,7 +250,7 @@ export default withStyles(styles)(class AchievementsPage extends React.Component
                                                             <Typography style={{color: '#3D8AC8'}} variant="h6">{n['desc']}</Typography>
                                                         </Grid>
                                                         <Grid item xs>
-                                                            <Typography style={{color: '#3D8AC8'}} variant="subtitle1">Acquired: {n['date_achieved']}</Typography>
+                                                            <Typography style={{color: '#3D8AC8'}} variant="subtitle1">Congratulations!</Typography>
                                                         </Grid>
                                                     </Grid>   
                                                 </Grid>

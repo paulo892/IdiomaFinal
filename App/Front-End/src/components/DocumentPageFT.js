@@ -118,7 +118,10 @@ export default withStyles(styles)(class DocumentPageFT extends React.Component {
                 headers: {'Content-type': 'application/json'}
             }
         ).then((data) => {
-            console.log('Done');
+            const res = data['data'];
+            if (res != 'NOACH') {
+                alert("Achievement \"" + res + "\" unlocked!")
+            }
         })
     }
 

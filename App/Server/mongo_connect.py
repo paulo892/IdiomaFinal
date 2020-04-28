@@ -227,19 +227,41 @@ def update_user_sessions():
     # gets list of user achievements
     ach = usr['achievements']
 
+    ach_gained = None
+
     # if user now at one session completed...
     if sessions == 1:
-        ach.append(ObjectId(ACHS_TO_IDS['first_session']))
+        # adds achievement to list
+        if ObjectId(ACHS_TO_IDS['first_session']) not in ach:
+            ach.append(ObjectId(ACHS_TO_IDS['first_session']))
+
+        # retrieves achievement object and extracts its name
+        achquery = {"_id": ObjectId(ACHS_TO_IDS['first_session'])}
+        cursor = achievements.find(achquery)
+        achievement = cursor[0]
+        ach_gained = achievement['name']
 
     # else if user now at two sessions completed...
     elif sessions == 2:
-        ach.append(ObjectId(ACHS_TO_IDS['second_session']))
+        # adds achievement to list
+        if ObjectId(ACHS_TO_IDS['second_session']) not in ach:
+            ach.append(ObjectId(ACHS_TO_IDS['second_session']))
+
+        # retrieves achievement object and extracts its name
+        achquery = {"_id": ObjectId(ACHS_TO_IDS['second_session'])}
+        cursor = achievements.find(achquery)
+        achievement = cursor[0]
+        ach_gained = achievement['name']
 
     # updates user object
     newvalues = { "$set": { "sessions_completed": sessions, "achievements": ach}}
     users.update_one(userquery, newvalues)
 
-    return 'Success'
+    # if achievement gained...
+    if ach_gained != None:
+        return str(ach_gained)
+    else:
+        return 'NOACH'
 
 # retrieves an appropriate article by user input and preferences
 @app.route('/api/getArticleId', methods=['GET','POST'])
@@ -521,11 +543,35 @@ def update_user():
     # updates the topics that the user has seen
     new_features_seen = [sum(x) for x in zip(features_seen, article_feats)]
 
+    # updates the number of documents the user has read
+    docs_read = usr['documents_read']
+    docs_read += 1
+
+    # gets list of user achievements
+    ach = usr['achievements']
+    ach_gained = None
+
+    # if number of documents read is now 1...
+    if docs_read == 1:
+        # adds achievement to list
+        if ObjectId(ACHS_TO_IDS['first_doc']) not in ach:
+            ach.append(ObjectId(ACHS_TO_IDS['first_doc']))
+
+        # retrieves achievement object and extracts its name
+        achquery = {"_id": ObjectId(ACHS_TO_IDS['first_doc'])}
+        cursor = achievements.find(achquery)
+        achievement = cursor[0]
+        ach_gained = achievement['name']
+
     # updates user object in database
-    newvalues = { "$set": { "documents_seen": usr['documents_seen'], "features_seen": new_features_seen } }
+    newvalues = { "$set": { "documents_seen": usr['documents_seen'], "features_seen": new_features_seen, "achievements": ach} }
     users.update_one(userquery, newvalues)
 
-    return
+    # if achievement gained...
+    if ach_gained != None:
+        return str(ach_gained)
+    else:
+        return 'NOACH'
 
 if __name__ == '__main__':
 
