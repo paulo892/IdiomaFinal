@@ -452,6 +452,7 @@ def get_user_documents():
 
     # extracts the documents seen by user
     docs_seen = usr['documents_seen']
+    print(docs_seen)
 
     docs = {}
 
@@ -460,6 +461,10 @@ def get_user_documents():
         # creates and runs query to find its data
         docquery = {"_id": ObjectId(doc), 'title': {'$regex': '.*' + search + '.*'}}
         cursor = documents.find(docquery)
+
+        # if cursor empty, continues
+        if cursor.count() == 0:
+            continue
 
         # gets the document data and appends to list
         document = cursor[0]
@@ -564,7 +569,7 @@ def update_user():
         ach_gained = achievement['name']
 
     # updates user object in database
-    newvalues = { "$set": { "documents_seen": usr['documents_seen'], "features_seen": new_features_seen, "achievements": ach} }
+    newvalues = { "$set": { "documents_seen": usr['documents_seen'], "features_seen": new_features_seen, "achievements": ach, "documents_read": docs_read} }
     users.update_one(userquery, newvalues)
 
     # if achievement gained...
