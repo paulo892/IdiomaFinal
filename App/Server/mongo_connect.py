@@ -452,7 +452,6 @@ def get_user_documents():
 
     # extracts the documents seen by user
     docs_seen = usr['documents_seen']
-    print(docs_seen)
 
     docs = {}
 
