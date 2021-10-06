@@ -18,11 +18,11 @@
     "default": {
         "scrapy-splash": {
             "hashes": [
-                "sha256:089188b11202813b14b88d3be008641a2b3d36e82fadd4a6c61f0af59b66e7b5",
-                "sha256:71ac958370f8732fec746a25a8235b03a4d3c4c93a59be51aa8e910a08cfe511"
+                "sha256:a7c17735415151ae01f07b03c7624e7276a343779b3c5f4546f655f6133df42f",
+                "sha256:f35986fbe916d4b7878f4d303ca6a9d4f013157ab2bae13d85f14da78d211193"
             ],
             "index": "pypi",
-            "version": "==0.7.2"
+            "version": "==0.8.0"
         }
     },
     "develop": {}
